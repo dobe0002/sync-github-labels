@@ -5,11 +5,10 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: [
     '**/*.{js,jsx}',
-    '!**/webpack.config.js',
     '!**/node_modules/**',
     '!**/coverage/**',
-    '!**/build/**',
     '!**/jest.config.js',
+    '!**/lint-staged.config.js',
     '!**/__fixtures__/**',
     '!**/utils/**'
   ],
