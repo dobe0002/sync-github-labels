@@ -5,7 +5,9 @@ const log = require('../service/log');
 
 class SyncOptions {
   constructor(userOptions) {
-    const configFileJSON = SyncOptions._getConfigFile(userOptions.config);
+    const configFileJSON = SyncOptions._getConfigFile(
+      _.get(userOptions, 'config')
+    );
     const newOptions = SyncOptions._combineConfigFile(
       userOptions,
       configFileJSON
@@ -39,22 +41,23 @@ class SyncOptions {
   get token() {
     return this.syncToken;
   }
-
-  get outputRepos() {
+  /*
+  get _outputRepos() {
     return this.syncOutputRepos;
   }
 
-  get outputRepoFile() {
+  get _outputRepoFile() {
     return this.syncOutputRepoFile;
   }
 
-  get sync() {
+  get _sync() {
     return this.syncSync;
   }
 
-  get force() {
+  get _force() {
     return this.syncForce;
   }
+  */
 
   /* Set configs */
 
@@ -62,10 +65,10 @@ class SyncOptions {
     let userConfigsFileJSON = '';
     try {
       userConfigsFileJSON = JSON.parse(
-        fs.readFileSync(path.join(__dirname, `../../${configFile}`), 'utf8')
+        fs.readFileSync(path.join(__dirname, `${configFile}`), 'utf8')
       );
     } catch (error) {
-      log('User config file not found.');
+      log.log('User config file not found.');
     }
     return userConfigsFileJSON;
   }
@@ -78,15 +81,15 @@ class SyncOptions {
     let hasRequired = true;
     if (this.inputFile === '' && this.inputRepo === '') {
       hasRequired = false;
-      log('No source for the labels identified', 'error');
+      log.error('No source for the labels identified');
     }
     if (this.token === '') {
       hasRequired = false;
-      log('Missing GitHub token.', 'error');
+      log.error('Missing GitHub token.');
     }
     if (this.outputRepos === '' && this.outputRepoFile === '') {
       hasRequired = false;
-      log('No destination for labels identified', 'error');
+      log.error('No destination for labels identified');
     }
     return hasRequired;
   }
