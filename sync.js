@@ -79,7 +79,7 @@ let opts = {};
 try {
   opts = parser.parse(process.argv);
 } catch (e) {
-  log(`Command line parsing error: %s => ${e.message}`, 'error');
+  log.log(`Command line parsing error: %s => ${e.message}`, 'error');
   process.exit(1);
 }
 // console.log('# opts:', opts);
@@ -87,8 +87,8 @@ try {
 /* SHOW HELP */
 if (opts.help) {
   const help = parser.help({ includeEnv: true }).trimRight();
-  log('Usage: node sync.js [OPTIONS]');
-  log(`Options:\n${help}`);
+  log.log('Usage: node sync.js [OPTIONS]');
+  log.log(`Options:\n${help}`);
   process.exit(0);
 }
 
@@ -97,7 +97,7 @@ if (opts.version) {
   const packageFile = JSON.parse(
     fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8')
   );
-  log(`Version: ${packageFile.version}`);
+  log.log(`Version: ${packageFile.version}`);
   process.exit(0);
 }
 
