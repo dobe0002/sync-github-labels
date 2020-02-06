@@ -14,13 +14,34 @@ class Git {
     this.gitToken = token;
   }
 
+  _isReady() {
+    return this.gitToken !== '' && this.gitUrl !== '';
+  }
+
   async getLabels(owner, repoName) {
-    if (this.gitToken === '') {
-      // console.log('No GitHub token was set');
-      return new Error('No Github token set');
+    // TODO need to check that both owner and repoName is set
+    if (!this._isReady()) {
+      // TODO might want to change this to reject, but then it would need to be
+      // a then, catch block to use this
+      return Promise.resolve(new Error('No Github token or url set'));
     }
     const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels`;
     return axios.get(endpoint, {
+      headers: {
+        Authorization: this.gitToken,
+        Accept: 'application/vnd.github.symmetra-preview+json'
+      }
+    });
+  }
+
+  async addLabel(owner, repoName, label) {
+    if (!this._isReady()) {
+      return Promise.resolve(new Error('No Github token or url set'));
+    }
+
+    const endpoint = `${this.gitURL}/repos/${owner}/${repoName}/labels`;
+    // expect a response of 201
+    return axios.post(endpoint, label.toObject, {
       headers: {
         Authorization: this.gitToken,
         Accept: 'application/vnd.github.symmetra-preview+json'
