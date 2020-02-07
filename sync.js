@@ -48,6 +48,11 @@ const options = [
       'Path to file that contains an array of owner/repo for the GitHub repos that will be synced.'
   },
   {
+    names: ['outputOrg'],
+    type: 'string',
+    help: 'Organization where every repo will be synced.'
+  },
+  {
     names: ['sync', 's'],
     type: 'bool',
     help:
