@@ -1,9 +1,58 @@
 import Repo from '../../../src/models/Repo';
+import Label from '../../../src/models/Label';
 
 describe('Repo Model Tests', () => {
   let repo = {};
+  const repoLabels = [
+    new Label({
+      name: 'sameLabel',
+      color: 'ffffff',
+      description: 'this label is the same between repo and master'
+    }),
+    new Label({
+      name: 'orphanLabel',
+      color: 'eeeeee',
+      description: 'this label exists only in the repo'
+    }),
+    new Label({
+      name: 'changedColor',
+      color: 'bbbbbb',
+      description: 'this label has a different color'
+    }),
+    new Label({
+      name: 'changedDescription',
+      color: '999999',
+      description: 'this label has a different description'
+    })
+  ];
+
+  const masterLabels = [
+    new Label({
+      name: 'sameLabel',
+      color: 'ffffff',
+      description: 'this label is the same between repo and master'
+    }),
+    new Label({
+      name: 'newLabel',
+      color: 'cccccc',
+      description: 'this label is only in the master list'
+    }),
+    new Label({
+      name: 'changedColor',
+      color: 'aaaaaa',
+      description: 'this label has a different color'
+    }),
+    new Label({
+      name: 'changedDescription',
+      color: '999999',
+      description: 'this label has a different UPDATED description'
+    })
+  ];
+
   beforeEach(() => {
     repo = new Repo();
+    repo.labels = repoLabels;
+    repo.masterLabels = masterLabels;
   });
   test('Is instance of Repo', () => {
     expect(repo).toBeInstanceOf(Repo);
@@ -19,7 +68,6 @@ describe('Repo Model Tests', () => {
     expect(repo.owner).toEqual('myOwner');
     expect(repo.name).toEqual('myName');
     expect(repo.fullName).toEqual('myOwner/myName');
-    // expect(repo.labels).toEqual(['myLabels']);
   });
   test('Set full name', () => {
     expect(repo.owner).toEqual('');
@@ -27,5 +75,38 @@ describe('Repo Model Tests', () => {
     repo.fullName = 'myOwner/myName';
     expect(repo.owner).toEqual('myOwner');
     expect(repo.name).toEqual('myName');
+  });
+
+  test('Labels to add', () => {
+    expect(repo.labelsToAdd).toEqual([
+      new Label({
+        name: 'newLabel',
+        color: 'cccccc',
+        description: 'this label is only in the master list'
+      })
+    ]);
+  });
+  test('Labels to delete', () => {
+    expect(repo.labelsToRemove).toEqual([
+      new Label({
+        name: 'orphanLabel',
+        color: 'eeeeee',
+        description: 'this label exists only in the repo'
+      })
+    ]);
+  });
+  test('Labels to edit', () => {
+    expect(repo.labelsToEdit).toEqual([
+      new Label({
+        name: 'changedColor',
+        color: 'aaaaaa',
+        description: 'this label has a different color'
+      }),
+      new Label({
+        name: 'changedDescription',
+        color: '999999',
+        description: 'this label has a different UPDATED description'
+      })
+    ]);
   });
 });
