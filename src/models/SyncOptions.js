@@ -17,8 +17,9 @@ class SyncOptions {
     this.syncInputRepo = newOptions.inputRepo || '';
     this.syncGithub = newOptions.github || '';
     this.syncToken = newOptions.token || '';
-    this.syncOutputRepos = newOptions.outputRepos || '';
-    this.syncOutputRepoFile = newOptions.outputRepoFile || '';
+    this.syncOutputRepos = newOptions.outputRepos || []; // array of ['owner/repo', 'owner/repo']
+    this.syncOutputRepoFile = newOptions.outputRepoFile || ''; // file with array of ['owner/repo', 'owner/repo']
+    // this.syncOutputOrg = newOptions.outputOrg || ''; TODO later
     this.syncSync = newOptions.sync || false;
     this.syncForce = newOptions.syncForce || false;
 
@@ -41,15 +42,15 @@ class SyncOptions {
   get token() {
     return this.syncToken;
   }
-  /*
-  get _outputRepos() {
+
+  get outputRepos() {
     return this.syncOutputRepos;
   }
 
-  get _outputRepoFile() {
+  get outputRepoFile() {
     return this.syncOutputRepoFile;
   }
-
+  /*
   get _sync() {
     return this.syncSync;
   }
@@ -78,6 +79,7 @@ class SyncOptions {
   }
 
   hasRequired() {
+    // TODO need to add github url
     let hasRequired = true;
     if (this.inputFile === '' && this.inputRepo === '') {
       hasRequired = false;
@@ -87,7 +89,11 @@ class SyncOptions {
       hasRequired = false;
       log.error('Missing GitHub token.');
     }
-    if (this.outputRepos === '' && this.outputRepoFile === '') {
+    if (
+      this.outputRepos === '' &&
+      this.outputRepoFile === '' &&
+      this.syncOutputOrg === ''
+    ) {
       hasRequired = false;
       log.error('No destination for labels identified');
     }

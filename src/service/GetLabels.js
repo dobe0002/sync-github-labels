@@ -2,33 +2,20 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
 const Label = require('../models/Label');
-const Git = require('./Git');
 
-class GetLabels {
+const Labels = require('./Labels');
+
+class GetLabels extends Labels {
   constructor(gitToken = '', gitUrl = '') {
+    super(); // notes this.git is inherited
     this.gitToken = gitToken;
     this.gitUrl = gitUrl;
-    this._setGit();
-  }
-
-  _setGit() {
-    this.git = new Git(this.gitToken, this.gitUrl);
-  }
-
-  set token(token) {
-    this.gitToken = token;
-    this._setGit();
-  }
-
-  set url(url) {
-    this.gitUrl = url;
     this._setGit();
   }
 
   static fromFile(filePath) {
     // TODO .. need to find a better way to determine path of file
     const labelJson = JSON.parse(
-      // TODO check for errors
       fs.readFileSync(path.join(__dirname, filePath), 'utf8')
     );
     return _.map(labelJson, label => new Label(label));
@@ -42,7 +29,6 @@ class GetLabels {
     });
     return labels;
   }
-  // fromRepo(repo) {}
 }
 
 module.exports = GetLabels;
