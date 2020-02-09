@@ -28,7 +28,7 @@ class Git {
     const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels`;
     return axios.get(endpoint, {
       headers: {
-        Authorization: this.gitToken,
+        Authorization: `Bearer ${this.gitToken}`,
         Accept: 'application/vnd.github.symmetra-preview+json'
       }
     });
@@ -43,7 +43,7 @@ class Git {
     // expect a response of 201
     return axios.post(endpoint, label.toObject, {
       headers: {
-        Authorization: this.gitToken,
+        Authorization: `Bearer ${this.gitToken}`,
         Accept: 'application/vnd.github.symmetra-preview+json'
       }
     });
