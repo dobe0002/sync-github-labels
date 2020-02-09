@@ -3,6 +3,23 @@ let labelsFromRepo = [];
 let error = '';
 let calls = [];
 
+const isAuthorized = headers => {
+  if (error !== '') {
+    return true;
+  }
+  const bearer = RegExp('^Bearer [a-zA-Z]*[tT]{1}oken[a-zA-Z]*$');
+  if (
+    !headers ||
+    !headers.Authorization ||
+    !bearer.test(headers.Authorization)
+  ) {
+    error = new Error('Not Authorized');
+    error.status = 401;
+    return false;
+  }
+  return true;
+};
+
 module.exports = {
   setLabels(labels) {
     labelsFromRepo = labels;
@@ -20,15 +37,11 @@ module.exports = {
     error = new Error(msg);
     error.status = code;
   },
+
   get: jest.fn((endpoint, options) => {
     calls.push({ endpoint, method: 'get', body: '' });
-    if (
-      !options.headers ||
-      !options.headers.Authorization ||
-      options.headers.Authorization === ''
-    ) {
-      this.setError('Not Authorized', 401);
-    }
+    isAuthorized(options.headers);
+
     if (error !== '') {
       return Promise.reject(error);
     }
@@ -47,6 +60,10 @@ module.exports = {
 
   post: jest.fn((endpoint, body, config) => {
     calls.push({ endpoint, method: 'post', body });
+    isAuthorized(config.headers);
+    if (error !== '') {
+      return Promise.reject(error);
+    }
     if (
       !config.headers ||
       !config.headers.Authorization ||
