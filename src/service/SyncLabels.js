@@ -10,7 +10,7 @@ class SyncLabels extends Labels {
     this._setGit();
   }
 
-  async addLabel(owner, repoName, label) {
+  async _addLabel(owner, repoName, label) {
     const response = await this.git.addLabel(owner, repoName, label);
     // TODO check for errors;
     return null;
@@ -24,7 +24,7 @@ class SyncLabels extends Labels {
       repo.labelsToAdd,
       5,
       async (label, index, labelCB) => {
-        const response = await self.addLabel(repo.owner, repo.name, label);
+        const response = await self._addLabel(repo.owner, repo.name, label);
         labelsAdded.push({ label, error: false, inuse: false });
         labelCB(null); // TODO handle errors ... currently assuming success
       },
@@ -33,7 +33,7 @@ class SyncLabels extends Labels {
       }
     );
   }
-
+  /*
   async editLabel() {}
 
   editLabelsToRepo() {}
@@ -42,7 +42,8 @@ class SyncLabels extends Labels {
 
   deleteLabel() {}
 
-  deleteLablesFromRemo() {}
+  deleteLabelsFromRepo() {}
+  */
 }
 
 module.exports = SyncLabels;

@@ -39,7 +39,7 @@ class Git {
       return Promise.resolve(new Error('No Github token or url set'));
     }
 
-    const endpoint = `${this.gitURL}/repos/${owner}/${repoName}/labels`;
+    const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels`;
     // expect a response of 201
     return axios.post(endpoint, label.toObject, {
       headers: {
