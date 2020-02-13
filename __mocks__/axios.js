@@ -85,5 +85,33 @@ module.exports = {
           )
         );
     }
+  }),
+  patch: jest.fn((endpoint, body, config) => {
+    calls.push({ endpoint, method: 'patch', body });
+    isAuthorized(config.headers);
+    if (error !== '') {
+      return Promise.reject(error);
+    }
+    if (
+      !config.headers ||
+      !config.headers.Authorization ||
+      config.headers.Authorization === ''
+    ) {
+      this.setError('Not Authorized', 401);
+    }
+    if (error !== '') {
+      return Promise.reject(error);
+    }
+
+    switch (true) {
+      case /labels/.test(endpoint):
+        return Promise.resolve({ data: body, status: 200 });
+      default:
+        return Promise.reject(
+          new Error(
+            `Endpoint: ${endpoint} was not found in the axios mock file.`
+          )
+        );
+    }
   })
 };

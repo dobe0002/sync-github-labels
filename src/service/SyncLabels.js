@@ -33,11 +33,31 @@ class SyncLabels extends Labels {
       }
     );
   }
+
+  async _editLabel(owner, repoName, label) {
+    const response = await this.git.editLabel(owner, repoName, label);
+    // TODO check for errors;
+    return null;
+  }
+
+  editLabelsToRepo(repo, cb) {
+    const self = this;
+    const labelsEdited = [];
+
+    async.eachOfLimit(
+      repo.labelsToEdit,
+      5,
+      async (label, index, labelCB) => {
+        const response = await self._editLabel(repo.owner, repo.name, label);
+        labelsEdited.push({ label, error: false, inuse: false });
+        labelCB(null); // TODO handle errors ... currently assuming success
+      },
+      error => {
+        return cb(error, labelsEdited);
+      }
+    );
+  }
   /*
-  async editLabel() {}
-
-  editLabelsToRepo() {}
-
   isLabelInUse() {}
 
   deleteLabel() {}

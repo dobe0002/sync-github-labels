@@ -50,4 +50,16 @@ describe('Git service tests', () => {
     expect(response.data).toEqual(labelToAdd.toObject);
     expect(response.status).toEqual(201);
   });
+  test('Edit label', async () => {
+    const labelToEdit = new Label({
+      name: 'mylabel',
+      color: 'aaaaaa',
+      description: 'My label description'
+    });
+    const response = await git.editLabel('myOwner', 'myRepo', labelToEdit);
+    expect(response.data).toEqual(labelToEdit.toObject);
+    expect(response.status).toEqual(200);
+    expect(axios.getCalls()[0].method).toEqual('patch');
+    expect(axios.getCalls()[0].body).toEqual(labelToEdit.toObject);
+  });
 });

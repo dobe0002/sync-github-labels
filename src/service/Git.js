@@ -48,6 +48,21 @@ class Git {
       }
     });
   }
+
+  async editLabel(owner, repoName, label) {
+    if (!this._isReady()) {
+      return Promise.resolve(new Error('No Github token or url set'));
+    }
+
+    const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels/${label.name}`;
+    // expect a response of 201
+    return axios.patch(endpoint, label.toObject, {
+      headers: {
+        Authorization: `Bearer ${this.gitToken}`,
+        Accept: 'application/vnd.github.symmetra-preview+json'
+      }
+    });
+  }
 }
 
 module.exports = Git;
