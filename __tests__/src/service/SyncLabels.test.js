@@ -61,6 +61,7 @@ describe('SyncLabels service tests', () => {
         description: 'THIS IS A NEW DESCRIPTION'
       }),
       new Label({
+        // note this shouldn't be picked up as an edit
         name: 'myNewLabel2',
         color: 'newColor',
         description: 'my description'

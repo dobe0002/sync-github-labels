@@ -6,6 +6,7 @@ const SyncOptions = require('../../../src/models/SyncOptions');
 const repoLabels = require('../../../__fixtures__/git/repoLabels');
 const Label = require('../../../src/models/Label');
 const Repo = require('../../../src/models/Repo');
+const FixtureRepos = require('../../../__fixtures__/reposForSync');
 
 describe('Sync tests', () => {
   axios.setLabels(repoLabels.default);
@@ -34,12 +35,12 @@ describe('Sync tests', () => {
     }
   ];
   // need tests for missing requirements
-  test('Sync labels from input file and output file', () => {});
-  test('Sync labels from input file and output list', () => {});
-  test('Sync labels from input repo and output file', () => {});
-  test('Sync labels from input repo and output list', () => {});
-  test('Sync labels  with "sync" flag on', () => {});
-  test('Sync labels  with "sync force" flag on', () => {});
+  test('Sync labels from input file and output file', () => { });
+  test('Sync labels from input file and output list', () => { });
+  test('Sync labels from input repo and output file', () => { });
+  test('Sync labels from input repo and output list', () => { });
+  test('Sync labels  with "sync" flag on', () => { });
+  test('Sync labels  with "sync force" flag on', () => { });
 
   /* **************************************** */
   /** TEMP TESTS = DELETE AFTER DEVELOPMENT */
@@ -89,7 +90,7 @@ describe('Sync tests', () => {
       done();
     });
   });
-  /* **************************************** */
+
   test('Get repos from file', done => {
     const options = new SyncOptions({
       inputRepo: 'myOwner/myLabelRepo',
@@ -133,7 +134,7 @@ describe('Sync tests', () => {
       done();
     });
   });
-  /* ********************************* */
+
   test('Get labels for each repo', done => {
     axios.setLabels(labelJson);
     const masterLabels = [
@@ -175,6 +176,33 @@ describe('Sync tests', () => {
       expect(sync._repoArray[0]).toBeInstanceOf(Repo);
       expect(sync._repoArray[0]._labels).toHaveLength(4);
       expect(sync._repoArray[0]._masterLabels).toHaveLength(3);
+      done();
+    });
+  });
+
+  test('Add labels to repos', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg'
+    });
+    const labelAdded = {
+      label: new Label({
+        name: 'newLabel',
+        color: '666666',
+        description: 'This is a new label not in the repos'
+      }),
+      error: false,
+      inuse: false
+    };
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.addLabelsRepos();
+    sync._addLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsAdded).toHaveLength(1);
+      expect(sync._repoArray[0].labelsAdded[0]).toEqual(labelAdded);
       done();
     });
   });
