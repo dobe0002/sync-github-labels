@@ -50,15 +50,14 @@ class SyncOptions {
   get outputRepoFile() {
     return this.syncOutputRepoFile;
   }
-  /*
-  get _sync() {
+
+  get sync() {
     return this.syncSync;
   }
 
-  get _force() {
+  get force() {
     return this.syncForce;
   }
-  */
 
   /* Set configs */
 

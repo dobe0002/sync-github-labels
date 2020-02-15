@@ -46,7 +46,7 @@ const labels = [
   })
 ];
 
-const addLabelsRepos = () => {
+const repos = () => {
   return [
     new Repo({
       owner: { login: 'myOrg' },
@@ -63,4 +63,4 @@ const addLabelsRepos = () => {
   ];
 };
 
-module.exports = { addLabelsRepos };
+module.exports = { repos };

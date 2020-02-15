@@ -35,13 +35,14 @@ describe('Sync tests', () => {
     }
   ];
   // need tests for missing requirements
+  /*
   test('Sync labels from input file and output file', () => { });
   test('Sync labels from input file and output list', () => { });
   test('Sync labels from input repo and output file', () => { });
   test('Sync labels from input repo and output list', () => { });
   test('Sync labels  with "sync" flag on', () => { });
   test('Sync labels  with "sync force" flag on', () => { });
-
+*/
   /* **************************************** */
   /** TEMP TESTS = DELETE AFTER DEVELOPMENT */
 
@@ -197,12 +198,67 @@ describe('Sync tests', () => {
       inuse: false
     };
     const sync = new Sync(options);
-    sync._repoArray = FixtureRepos.addLabelsRepos();
+    sync._repoArray = FixtureRepos.repos();
     sync._addLabels(error => {
       expect(error).toBeNull();
       expect(sync._repoArray).toHaveLength(2);
       expect(sync._repoArray[0].labelsAdded).toHaveLength(1);
       expect(sync._repoArray[0].labelsAdded[0]).toEqual(labelAdded);
+      done();
+    });
+  });
+
+  test('Edited labels to repos', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg'
+    });
+    const labelsEdited = [
+      {
+        label: new Label({
+          name: 'changedColor',
+          color: 'aaaaaa',
+          description: 'this label has a different color'
+        }),
+        error: false,
+        inuse: false
+      },
+      {
+        label: new Label({
+          name: 'changedDescription',
+          color: '999999',
+          description: 'this label has a different description'
+        }),
+        error: false,
+        inuse: false
+      }
+    ];
+
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._editLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsEdited).toHaveLength(2);
+      expect(sync._repoArray[0].labelsEdited).toEqual(labelsEdited);
+      done();
+    });
+  });
+
+  test('Syncing is skipped if sync and force are not set', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg'
+    });
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._removeLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toEqual(FixtureRepos.repos());
       done();
     });
   });

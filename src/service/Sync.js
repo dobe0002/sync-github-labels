@@ -151,6 +151,38 @@ class Sync {
       }
     );
   }
+
+  _editLabels(cb) {
+    const self = this;
+    return async.eachOfLimit(
+      this.repos,
+      5,
+      async (repo, index, repoCB) => {
+        self.syncLabels.editLabelsToRepo(repo, (error, labelsEdited) => {
+          labelsEdited.forEach(label => {
+            // this just updates the repo with status of label adds
+            self.repos[index].labelEdited(
+              label.label,
+              label.error,
+              label.inuse
+            );
+          });
+          repoCB(error);
+        });
+      },
+      error => {
+        return cb(error);
+      }
+    );
+  }
+
+  _removeLabels(cb) {
+    if (this.syncOptions.sync === false && this.syncOptions.force === false) {
+      cb(null);
+    } else {
+      cb('ERROR');
+    }
+  }
 }
 
 module.exports = Sync;
