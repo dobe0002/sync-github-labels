@@ -6,29 +6,41 @@ class Repo {
     this.repoName = obj.name || '';
     this.repoLabels = obj.labels || [];
     this.mastLabels = obj.masterLabels || [];
-    this.labelsAdded = []; // tracks the result of an attempt to add a label
-    this.labelsEdited = []; // tracks the result of an attempt to edit a label
-    this.labelsRemoved = []; // tracks the result of an attempt to remove a label
+    this.labelsAddedArray = []; // tracks the result of an attempt to add a label
+    this.labelsEditedArray = []; // tracks the result of an attempt to edit a label
+    this.labelsRemovedArray = []; // tracks the result of an attempt to remove a label
   }
 
   /** Set label status * */
 
   labelAdded(label, error = false, inuse = false) {
     // label is a label object
-    this.labelsAdded.push({ label, error, inuse });
+    this.labelsAddedArray.push({ label, error, inuse });
   }
 
   labelEdited(label, error = false, inuse = false) {
     // label is a label object
-    this.labelsEdited.push({ label, error, inuse });
+    this.labelsEditedArray.push({ label, error, inuse });
   }
 
   labelRemoved(label, error = false, inuse = false, removed = false) {
     // label is a label object
-    this.labelsRemoved.push({ label, error, inuse, removed });
+    this.labelsRemovedArray.push({ label, error, inuse, removed });
   }
 
   /** Getters and Setters */
+
+  get labelsAdded() {
+    return this.labelsAddedArray;
+  }
+
+  get labelsEdited() {
+    return this.labelsEditedArray;
+  }
+
+  get labelsRemoved() {
+    return this.labelsRemovedArray;
+  }
 
   get owner() {
     return this.repoOwner;
