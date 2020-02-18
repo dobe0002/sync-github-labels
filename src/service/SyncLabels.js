@@ -3,10 +3,11 @@ const async = require('async');
 const Labels = require('./Labels');
 
 class SyncLabels extends Labels {
-  constructor(gitToken = '', gitUrl = '') {
+  constructor(gitToken = '', gitUrl = '', syncForceSetting = false) {
     super(); // notes this.git is inherited
     this.gitToken = gitToken;
     this.gitUrl = gitUrl;
+    this.syncForceSetting = syncForceSetting;
     this._setGit();
   }
 
@@ -14,6 +15,10 @@ class SyncLabels extends Labels {
     const response = await this.git.addLabel(owner, repoName, label);
     // TODO check for errors;
     return null;
+  }
+
+  set _force(forceSetting) {
+    this.syncForceSetting = forceSetting;
   }
 
   addLabelsToRepo(repo, cb) {
@@ -57,13 +62,44 @@ class SyncLabels extends Labels {
       }
     );
   }
-  /*
-  isLabelInUse() {}
 
-  deleteLabel() {}
+  async _isLabelInUse(owner, repoName, label, onlyActive = false) {
+    return this.git.isLabelInUse(owner, repoName, label, onlyActive);
+  }
 
-  deleteLabelsFromRepo() {}
-  */
+  async _deleteLabel(owner, repoName, label) {
+    const response = await this.git.deleteLabel(owner, repoName, label);
+    // TODO check for errors;
+    return null;
+  }
+
+  deleteLabelsFromRepo(repo, cb) {
+    const self = this;
+    const labelsRemoved = [];
+
+    async.eachOfLimit(
+      repo.labelsToRemove,
+      5,
+      async (label, index, labelCB) => {
+        const inuse = await this._isLabelInUse(repo.owner, repo.name, label);
+        let removed = false;
+        if (inuse === false || self.syncForceSetting === true) {
+          const response = await self._deleteLabel(
+            repo.owner,
+            repo.name,
+            label
+          );
+          removed = true;
+        }
+
+        labelsRemoved.push({ label, error: false, inuse, removed });
+        labelCB(null); // TODO handle errors ... currently assuming success
+      },
+      error => {
+        return cb(error, labelsRemoved);
+      }
+    );
+  }
 }
 
 module.exports = SyncLabels;

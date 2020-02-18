@@ -18,7 +18,8 @@ class Sync {
     );
     this.syncLabels = new SyncLabels(
       this.syncOptions.token,
-      this.syncOptions.github
+      this.syncOptions.github,
+      this.syncOptions.force
     );
 
     this.labels = []; // Master array of Label objects
@@ -160,7 +161,7 @@ class Sync {
       async (repo, index, repoCB) => {
         self.syncLabels.editLabelsToRepo(repo, (error, labelsEdited) => {
           labelsEdited.forEach(label => {
-            // this just updates the repo with status of label adds
+            // this just updates the repo with status of label edits
             self.repos[index].labelEdited(
               label.label,
               label.error,
@@ -178,10 +179,30 @@ class Sync {
 
   _removeLabels(cb) {
     if (this.syncOptions.sync === false && this.syncOptions.force === false) {
-      cb(null);
-    } else {
-      cb('ERROR');
+      return cb(null);
     }
+    const self = this;
+    return async.eachOfLimit(
+      this.repos,
+      5,
+      async (repo, index, repoCB) => {
+        self.syncLabels.deleteLabelsFromRepo(repo, (error, labelsRemoved) => {
+          labelsRemoved.forEach(label => {
+            // this just updates the repo with status of label removes
+            self.repos[index].labelRemoved(
+              label.label,
+              label.error,
+              label.inuse,
+              label.removed
+            );
+          });
+          repoCB(error);
+        });
+      },
+      error => {
+        return cb(error);
+      }
+    );
   }
 }
 

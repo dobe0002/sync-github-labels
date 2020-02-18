@@ -9,7 +9,6 @@ const Repo = require('../../../src/models/Repo');
 const FixtureRepos = require('../../../__fixtures__/reposForSync');
 
 describe('Sync tests', () => {
-  axios.setLabels(repoLabels.default);
   // See the repoLabels file to determine what is expected
   // Expected labels are actually Label objects
   const expectedLabels = [
@@ -34,6 +33,10 @@ describe('Sync tests', () => {
       labelName: 'other repo label'
     }
   ];
+  beforeEach(() => {
+    axios.reset();
+    axios.setLabels(repoLabels.default);
+  });
   // need tests for missing requirements
   /*
   test('Sync labels from input file and output file', () => { });
@@ -259,6 +262,140 @@ describe('Sync tests', () => {
     sync._removeLabels(error => {
       expect(error).toBeNull();
       expect(sync._repoArray).toEqual(FixtureRepos.repos());
+      done();
+    });
+  });
+
+  test('Labels not in use removed with force setting', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg',
+      syncForce: true
+    });
+
+    const expected = [
+      {
+        label: new Label({
+          name: 'orphanLabel',
+          color: 'eeeeee',
+          description: 'this label exists only in the repo'
+        }),
+        error: false,
+        inuse: false,
+        removed: true
+      }
+    ];
+
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._removeLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsRemoved).toHaveLength(1);
+      expect(sync._repoArray[0].labelsRemoved).toEqual(expected);
+      done();
+    });
+  });
+
+  test('Labels in use removed with force setting', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg',
+      syncForce: true
+    });
+
+    const expected = [
+      {
+        label: new Label({
+          name: 'orphanLabel',
+          color: 'eeeeee',
+          description: 'this label exists only in the repo'
+        }),
+        error: false,
+        inuse: true,
+        removed: true
+      }
+    ];
+    axios.setLabelsInUse(['orphanLabel']);
+
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._removeLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsRemoved).toHaveLength(1);
+      expect(sync._repoArray[0].labelsRemoved).toEqual(expected);
+      done();
+    });
+  });
+
+  test('Labels not in use removed without force setting', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg',
+      sync: true
+    });
+
+    const expected = [
+      {
+        label: new Label({
+          name: 'orphanLabel',
+          color: 'eeeeee',
+          description: 'this label exists only in the repo'
+        }),
+        error: false,
+        inuse: false,
+        removed: true
+      }
+    ];
+
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._removeLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsRemoved).toHaveLength(1);
+      expect(sync._repoArray[0].labelsRemoved).toEqual(expected);
+      done();
+    });
+  });
+
+  test('Labels in use not removed without force setting', done => {
+    const options = new SyncOptions({
+      inputFile: '../../__fixtures__/localLabelFile.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputOrg: 'myLabelOrg',
+      sync: true
+    });
+
+    const expected = [
+      {
+        label: new Label({
+          name: 'orphanLabel',
+          color: 'eeeeee',
+          description: 'this label exists only in the repo'
+        }),
+        error: false,
+        inuse: true,
+        removed: false
+      }
+    ];
+    axios.setLabelsInUse(['orphanLabel']);
+
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._removeLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsRemoved).toHaveLength(1);
+      expect(sync._repoArray[0].labelsRemoved).toEqual(expected);
       done();
     });
   });

@@ -63,6 +63,39 @@ class Git {
       }
     });
   }
+
+  async deleteLabel(owner, repoName, label) {
+    if (!this._isReady()) {
+      return Promise.resolve(new Error('No Github token or url set'));
+    }
+
+    const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels/${label.name}`;
+    return axios.delete(endpoint, {
+      headers: {
+        Authorization: `Bearer ${this.gitToken}`,
+        Accept: 'application/vnd.github.symmetra-preview+json'
+      }
+    });
+  }
+
+  async isLabelInUse(owner, repoName, label, onlyActive = false) {
+    if (!this._isReady()) {
+      return Promise.resolve(new Error('No Github token or url set'));
+    }
+
+    let endpoint = `${this.gitUrl}/search/issues?q=repo:${owner}/${repoName}+label:${label.name}`;
+    if (onlyActive) {
+      endpoint += '+is:open';
+    }
+    const response = await axios.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${this.gitToken}`,
+        Accept: 'application/vnd.github.symmetra-preview+json'
+      }
+    });
+    // TODO catch errors
+    return !!(response.data.total_count && response.data.total_count > 0);
+  }
 }
 
 module.exports = Git;

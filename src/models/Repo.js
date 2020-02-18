@@ -23,9 +23,9 @@ class Repo {
     this.labelsEdited.push({ label, error, inuse });
   }
 
-  labelRemoved(label, error = false, inuse = false) {
+  labelRemoved(label, error = false, inuse = false, removed = false) {
     // label is a label object
-    this.labelsRemoved.push({ label, error, inuse });
+    this.labelsRemoved.push({ label, error, inuse, removed });
   }
 
   /** Getters and Setters */

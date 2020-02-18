@@ -10,6 +10,11 @@ describe('Git service tests', () => {
     axios.reset();
     git.token = 'myGitToken';
     git.url = 'myGitUrl';
+    axios.setLabelsInUse([
+      'myLabelInuse',
+      'myOtherLabelInUse',
+      'myThirdLabelInUse'
+    ]);
   });
   test('Get labels fail if token or github url is not set', async () => {
     git.token = '';
@@ -61,5 +66,72 @@ describe('Git service tests', () => {
     expect(response.status).toEqual(200);
     expect(axios.getCalls()[0].method).toEqual('patch');
     expect(axios.getCalls()[0].body).toEqual(labelToEdit.toObject);
+  });
+
+  test('Delete label', async () => {
+    const labelToEdit = new Label({
+      name: 'mylabel',
+      color: 'aaaaaa',
+      description: 'My label description'
+    });
+    const response = await git.deleteLabel('myOwner', 'myRepo', labelToEdit);
+    expect(response.data).toEqual('');
+    expect(response.status).toEqual(204);
+    expect(axios.getCalls()).toHaveLength(1);
+    expect(axios.getCalls()[0].method).toEqual('delete');
+    expect(axios.getCalls()[0].endpoint).toEqual(
+      'myGitUrl/repos/myOwner/myRepo/labels/mylabel'
+    );
+  });
+
+  test('Catch that label is in use - all issues', async () => {
+    const response = await git.isLabelInUse(
+      'myOwner',
+      'myRepo',
+      new Label({ name: 'myLabelInuse' })
+    );
+    expect(response).toBeTruthy();
+    expect(axios.getCalls()).toHaveLength(1);
+    expect(axios.getCalls()[0].endpoint).toEqual(
+      'myGitUrl/search/issues?q=repo:myOwner/myRepo+label:myLabelInuse'
+    );
+  });
+  test('Catch that label is in use - active issues', async () => {
+    const response = await git.isLabelInUse(
+      'myOwner',
+      'myRepo',
+      new Label({ name: 'myLabelInuse' }),
+      true
+    );
+    expect(response).toBeTruthy();
+    expect(axios.getCalls()).toHaveLength(1);
+    expect(axios.getCalls()[0].endpoint).toEqual(
+      'myGitUrl/search/issues?q=repo:myOwner/myRepo+label:myLabelInuse+is:open'
+    );
+  });
+  test('Catch that label is not in use - all issues', async () => {
+    const response = await git.isLabelInUse(
+      'myOwner',
+      'myRepo',
+      new Label({ name: 'myLabelThatIsNotInuse' })
+    );
+    expect(response).toBeFalsy();
+    expect(axios.getCalls()).toHaveLength(1);
+    expect(axios.getCalls()[0].endpoint).toEqual(
+      'myGitUrl/search/issues?q=repo:myOwner/myRepo+label:myLabelThatIsNotInuse'
+    );
+  });
+  test('Catch that label is not in use - active issues', async () => {
+    const response = await git.isLabelInUse(
+      'myOwner',
+      'myRepo',
+      new Label({ name: 'myLabelThatIsNotInuse' }),
+      true
+    );
+    expect(response).toBeFalsy();
+    expect(axios.getCalls()).toHaveLength(1);
+    expect(axios.getCalls()[0].endpoint).toEqual(
+      'myGitUrl/search/issues?q=repo:myOwner/myRepo+label:myLabelThatIsNotInuse+is:open'
+    );
   });
 });

@@ -1,4 +1,7 @@
+const _ = require('lodash');
+
 let labelsFromRepo = [];
+let labelsInUse = [];
 
 let error = '';
 let calls = [];
@@ -19,10 +22,17 @@ const isAuthorized = headers => {
   }
   return true;
 };
+const getLabelName = endpoint => {
+  const matches = endpoint.match(/label:([a-zA-Z0-9-_]*)/);
+  return matches[1];
+};
 
 module.exports = {
   setLabels(labels) {
     labelsFromRepo = labels;
+  },
+  setLabelsInUse(labels) {
+    labelsInUse = labels;
   },
 
   getCalls() {
@@ -32,6 +42,7 @@ module.exports = {
     labelsFromRepo = [];
     error = '';
     calls = [];
+    labelsInUse = [];
   },
   setError(msg, code = 500) {
     error = new Error(msg);
@@ -47,6 +58,12 @@ module.exports = {
     }
 
     switch (true) {
+      case /search/.test(endpoint): {
+        const label = getLabelName(endpoint);
+        const found = _.find(labelsInUse, l => l === label) ? 1 : 0;
+
+        return Promise.resolve({ data: { total_count: found }, status: 200 });
+      }
       case /labels/.test(endpoint):
         return Promise.resolve({ data: labelsFromRepo, status: 200 });
       default:
@@ -60,17 +77,9 @@ module.exports = {
 
   post: jest.fn((endpoint, body, config) => {
     calls.push({ endpoint, method: 'post', body });
+
     isAuthorized(config.headers);
-    if (error !== '') {
-      return Promise.reject(error);
-    }
-    if (
-      !config.headers ||
-      !config.headers.Authorization ||
-      config.headers.Authorization === ''
-    ) {
-      this.setError('Not Authorized', 401);
-    }
+
     if (error !== '') {
       return Promise.reject(error);
     }
@@ -89,16 +98,7 @@ module.exports = {
   patch: jest.fn((endpoint, body, config) => {
     calls.push({ endpoint, method: 'patch', body });
     isAuthorized(config.headers);
-    if (error !== '') {
-      return Promise.reject(error);
-    }
-    if (
-      !config.headers ||
-      !config.headers.Authorization ||
-      config.headers.Authorization === ''
-    ) {
-      this.setError('Not Authorized', 401);
-    }
+
     if (error !== '') {
       return Promise.reject(error);
     }
@@ -106,6 +106,25 @@ module.exports = {
     switch (true) {
       case /labels/.test(endpoint):
         return Promise.resolve({ data: body, status: 200 });
+      default:
+        return Promise.reject(
+          new Error(
+            `Endpoint: ${endpoint} was not found in the axios mock file.`
+          )
+        );
+    }
+  }),
+  delete: jest.fn((endpoint, config) => {
+    calls.push({ endpoint, method: 'delete', body: '' });
+    isAuthorized(config.headers);
+
+    if (error !== '') {
+      return Promise.reject(error);
+    }
+
+    switch (true) {
+      case /labels/.test(endpoint):
+        return Promise.resolve({ data: '', status: 204 });
       default:
         return Promise.reject(
           new Error(

@@ -20,7 +20,6 @@ describe('SyncLabels service tests', () => {
     })
   ];
 
-  // const repoLabels = [];
   let repo = {};
 
   beforeEach(() => {
@@ -87,6 +86,103 @@ describe('SyncLabels service tests', () => {
       expect(labelsEdited[0].label).toEqual(masterLabels[0]);
       expect(labelsEdited[0].error).toEqual(false);
       expect(labelsEdited[0].inuse).toEqual(false);
+      done();
+    });
+  });
+
+  test('Delete Labels - forced ', done => {
+    repo.labels = [
+      new Label({
+        name: 'myNewLabel',
+        color: '111111',
+        description: 'my description'
+      }),
+      new Label({
+        name: 'myNewLabel2',
+        color: '222222',
+        description: 'my description'
+      }),
+      new Label({
+        name: 'removeMe',
+        color: '444444',
+        description: 'This label should be removed'
+      })
+    ];
+
+    const expected = [
+      {
+        label: new Label({
+          name: 'removeMe',
+          color: '444444',
+          description: 'This label should be removed'
+        }),
+        error: false,
+        inuse: true,
+        removed: true
+      }
+    ];
+
+    repo.masterLabels = masterLabels;
+    axios.setLabelsInUse(['removeMe']);
+
+    syncLabels._force = true;
+
+    syncLabels.deleteLabelsFromRepo(repo, (error, labelsRemoved) => {
+      expect(error).toBeNull();
+      expect(labelsRemoved).toHaveLength(1);
+      expect(labelsRemoved).toEqual(expected);
+
+      done();
+    });
+  });
+
+  test('Delete Labels - do not delete if in use ', done => {
+    repo.labels = [
+      new Label({
+        name: 'keepMe',
+        color: '222222',
+        description: 'this label is not in master list but is in use'
+      }),
+      new Label({
+        name: 'removeMe',
+        color: '444444',
+        description: 'This label should be removed'
+      })
+    ];
+
+    const expected = [
+      {
+        label: new Label({
+          name: 'keepMe',
+          color: '222222',
+          description: 'this label is not in master list but is in use'
+        }),
+        error: false,
+        inuse: true,
+        removed: false
+      },
+      {
+        label: new Label({
+          name: 'removeMe',
+          color: '444444',
+          description: 'This label should be removed'
+        }),
+        error: false,
+        inuse: false,
+        removed: true
+      }
+    ];
+
+    repo.masterLabels = masterLabels;
+    axios.setLabelsInUse(['keepMe']);
+
+    // syncLabels._force = false; // this should be the default setting
+
+    syncLabels.deleteLabelsFromRepo(repo, (error, labelsRemoved) => {
+      expect(error).toBeNull();
+      expect(labelsRemoved).toHaveLength(2);
+      expect(labelsRemoved).toEqual(expected);
+
       done();
     });
   });
