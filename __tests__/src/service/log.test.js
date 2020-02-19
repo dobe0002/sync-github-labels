@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 const log = require('../../../src/service/log');
+const Repo = require('../../../src/models/Repo');
 
 describe('log tests', () => {
   // mocks console.log
@@ -35,9 +36,6 @@ describe('log tests', () => {
     console.log.mockClear();
     console.warn.mockClear();
   });
-  /*
-
-  */
 
   test('Logs level log with correctly', () => {
     log.log('hello', 'world');
@@ -53,5 +51,13 @@ describe('log tests', () => {
     log.warn('hello', 'world');
     expect(console.warn).toHaveBeenCalled();
     expect(outputWarnData).toEqual(`${log._LOGSTARTERS.warn} hello world`);
+  });
+  test('Creates a proper end of run report', () => {
+    // TODO this is a dummy test, it needs to check with the  actual console.log
+    // The console.log mock is running all statements into a single line:
+    // *******************************************REPO:  / +++++ Labels Added ++++++++++ Labels Edited ++++++++++ Labels Removed +++++
+    const repo = new Repo();
+    log.report(repo);
+    expect(console.log).toHaveBeenCalled();
   });
 });
