@@ -19,11 +19,16 @@ class Git {
   }
 
   async getLabels(owner, repoName) {
-    // TODO need to check that both owner and repoName is set
-    if (!this._isReady()) {
-      // TODO might want to change this to reject, but then it would need to be
-      // a then, catch block to use this
-      return Promise.resolve(new Error('No Github token or url set'));
+    if (
+      !this._isReady() ||
+      owner === undefined ||
+      owner === '' ||
+      repoName === undefined ||
+      repoName === ''
+    ) {
+      return Promise.resolve(
+        new Error('Repo, token, or github url is not set ')
+      );
     }
     const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels`;
     return axios.get(endpoint, {

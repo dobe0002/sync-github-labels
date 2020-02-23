@@ -1,0 +1,9 @@
+{
+  "labels":[
+    {
+      "name":"new from file",
+      "description":"This file was imported from masterLabel.json",
+      "color":"004400"
+    }
+  ]
+}

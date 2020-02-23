@@ -1,12 +1,15 @@
-[
-  {
-    "name": "my label",
-    "color": "f00",
-    "description": "This is label"
-  },
-  {
-    "name": "my other label",
-    "color": "0f0",
-    "description": "This is the other label"
-  }
-]
+{
+  "labels":
+  [
+    {
+      "name": "my label",
+      "color": "f00",
+      "description": "This is label"
+    },
+    {
+      "name": "my other label",
+      "color": "0f0",
+      "description": "This is the other label"
+    }
+  ]
+}

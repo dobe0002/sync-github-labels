@@ -51,7 +51,7 @@ describe('Sync tests', () => {
 
   test('Get Labels from file', done => {
     const options = new SyncOptions({
-      inputFile: '../../__fixtures__/localLabelFile.json',
+      inputFile: '__fixtures__/localLabelFile.json',
       github: 'myGitHubRepo',
       token: 'myGitHubToken',
       outputOrg: 'myLabelOrg'
@@ -100,7 +100,7 @@ describe('Sync tests', () => {
       inputRepo: 'myOwner/myLabelRepo',
       github: 'myGitHubRepo',
       token: 'myGitHubToken',
-      outputRepoFile: '../../__fixtures__/localRepoList.json'
+      outputRepoFile: '__fixtures__/localRepoList.json'
     });
     const expected = [
       new Repo({ owner: { login: 'myOrgFromFile' }, name: 'Repo1' }),
@@ -197,7 +197,7 @@ describe('Sync tests', () => {
         color: '666666',
         description: 'This is a new label not in the repos'
       }),
-      error: false,
+      error: null,
       inuse: false
     };
     const sync = new Sync(options);
@@ -225,7 +225,7 @@ describe('Sync tests', () => {
           color: 'aaaaaa',
           description: 'this label has a different color'
         }),
-        error: false,
+        error: null,
         inuse: false
       },
       {
@@ -234,7 +234,7 @@ describe('Sync tests', () => {
           color: '999999',
           description: 'this label has a different description'
         }),
-        error: false,
+        error: null,
         inuse: false
       }
     ];
@@ -282,7 +282,7 @@ describe('Sync tests', () => {
           color: 'eeeeee',
           description: 'this label exists only in the repo'
         }),
-        error: false,
+        error: null,
         inuse: false,
         removed: true
       }
@@ -315,7 +315,7 @@ describe('Sync tests', () => {
           color: 'eeeeee',
           description: 'this label exists only in the repo'
         }),
-        error: false,
+        error: null,
         inuse: true,
         removed: true
       }
@@ -349,7 +349,7 @@ describe('Sync tests', () => {
           color: 'eeeeee',
           description: 'this label exists only in the repo'
         }),
-        error: false,
+        error: null,
         inuse: false,
         removed: true
       }
@@ -382,7 +382,7 @@ describe('Sync tests', () => {
           color: 'eeeeee',
           description: 'this label exists only in the repo'
         }),
-        error: false,
+        error: null,
         inuse: true,
         removed: false
       }

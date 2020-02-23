@@ -20,7 +20,7 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions.token).toBeFalsy();
   });
   test('Getters, with config file', () => {
-    inputFromCLI.config = '../../__fixtures__/config.json';
+    inputFromCLI.config = '__fixtures__/config.json';
     syncOptions = new SyncOptions(inputFromCLI);
     expect(syncOptions.inputFile).toEqual('MyNewInputFile');
     expect(syncOptions.inputRepo).toBeFalsy();

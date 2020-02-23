@@ -14,7 +14,8 @@ class Sync {
     this.syncOptions = syncOptions;
     this.getLabels = new GetLabels(
       this.syncOptions.token,
-      this.syncOptions.github
+      this.syncOptions.github,
+      this.syncOptions.debug
     );
     this.syncLabels = new SyncLabels(
       this.syncOptions.token,
@@ -42,7 +43,7 @@ class Sync {
     this.repos = repoArray;
   }
 
-  syncLabels() {
+  run(cb = () => {}) {
     async.waterfall(
       [
         _.bind(this._hasRequired, this),
@@ -55,77 +56,98 @@ class Sync {
       ],
       error => {
         if (error !== null) {
-          log('Label sync encountered an error and did not complete.', 'error');
+          log.error(
+            `Label sync encountered an error and did not complete: ${error}`
+          );
         }
-        // Report summary
+        _.each(this.repos, repo => {
+          log.report(repo);
+        });
+        cb();
       }
     );
   }
 
   _hasRequired(cb) {
-    return this.syncOptions.hasRequired()
+    return this.syncOptions.hasRequired() // This will causing errors to be logged twice ... logging should be done here.
       ? cb(null)
-      : cb('Missing requirements');
+      : cb(
+          `Missing requirements.  Please check that a GitHub url and token is set.`
+        );
   }
 
   _getLabels(cb) {
     if (this.syncOptions.inputFile !== '') {
       this._labelsFromFile(error => cb(error));
     } else if (this.syncOptions.inputRepo !== '') {
-      this._labelsFromRepo(response => cb(response));
+      this._labelsFromRepo(error => cb(error));
     } else {
-      cb('No source of labels');
+      cb('No source of master labels set.');
     }
   }
 
   _labelsFromFile(cb) {
-    this.labels = GetLabels.fromFile(this.syncOptions.inputFile);
-    return cb(null);
+    const labels = GetLabels.fromFile(this.syncOptions.inputFile);
+    let error = null;
+    if (_.isError(labels)) {
+      error = labels.message;
+    }
+    this.labels = labels;
+    return cb(error);
   }
 
   async _labelsFromRepo(cb) {
-    // TODO check for errors
-
     const repo = new Repo();
     repo.fullName = this.syncOptions.inputRepo;
-    this.labels = await this.getLabels.fromRepo(repo.owner, repo.name);
-    cb(null);
+    this.getLabels.fromRepo(repo.owner, repo.name, (error, labels) => {
+      this.labels = labels;
+      cb(error);
+    });
   }
 
   _getRepos(cb) {
     let repos = [];
-    if (this.syncOptions.outputRepos.length !== 0) {
+    let error = null;
+    if (this.syncOptions.outputRepos.length > 0) {
       repos = this.syncOptions.outputRepos;
     } else if (this.syncOptions.outputRepoFile !== '') {
-      // TODO check for errors in getting/reading file
-      repos = JSON.parse(
-        fs.readFileSync(
-          path.join(__dirname, this.syncOptions.outputRepoFile),
-          'utf8'
-        )
-      );
-    } else return cb('No output repos set');
+      try {
+        repos = JSON.parse(
+          fs.readFileSync(
+            path.join(__dirname, `../../${this.syncOptions.outputRepoFile}`),
+            'utf8'
+          )
+        ).outputRepos;
+      } catch (err) {
+        error = `Unable to read file with output directories`;
+      }
+    }
+    if (repos.length === 0) {
+      error = `No output repos identified`;
+    }
     this.repos = repos.map(repo => {
       const repoObj = new Repo();
       repoObj.fullName = repo;
       return repoObj;
     });
-    return cb(null);
+    cb(error);
   }
 
   _getRepoLabels(cb) {
     const self = this;
-
     return async.eachOfLimit(
       this.repos,
       5,
-      async (_repo, index, repoCB) => {
+      (_repo, index, repoCB) => {
         self.repos[index].masterLabels = self.labels;
-        self.repos[index].labels = await self.getLabels.fromRepo(
+        self.getLabels.fromRepo(
           self.repos[index].owner,
-          self.repos[index].name
+          self.repos[index].name,
+          (error, labels) => {
+            self.repos[index].labels = labels;
+            repoCB(null); // purposely not passing error along because labels for other repos should be tried.
+          }
         );
-        repoCB(null);
       },
       error => {
         return cb(error);
@@ -138,16 +160,16 @@ class Sync {
     return async.eachOfLimit(
       this.repos,
       5,
-      async (repo, index, repoCB) => {
+      (repo, index, repoCB) => {
         self.syncLabels.addLabelsToRepo(repo, (error, labelsAdded) => {
           labelsAdded.forEach(label => {
-            // this just updates the repo with status of label adds
             self.repos[index].labelAdded(label.label, label.error, label.inuse);
           });
-          repoCB(error);
+          repoCB(null); // purposely not passing error so syncing will continue
         });
       },
       error => {
+        // not this error will always be null (see repoCB call above)
         return cb(error);
       }
     );
@@ -158,20 +180,20 @@ class Sync {
     return async.eachOfLimit(
       this.repos,
       5,
-      async (repo, index, repoCB) => {
+      (repo, index, repoCB) => {
         self.syncLabels.editLabelsToRepo(repo, (error, labelsEdited) => {
           labelsEdited.forEach(label => {
-            // this just updates the repo with status of label edits
             self.repos[index].labelEdited(
               label.label,
               label.error,
               label.inuse
             );
           });
-          repoCB(error);
+          repoCB(null); // purposely not passing error so syncing will continue
         });
       },
       error => {
+        // not this error will always be null (see repoCB call above)
         return cb(error);
       }
     );
@@ -185,10 +207,9 @@ class Sync {
     return async.eachOfLimit(
       this.repos,
       5,
-      async (repo, index, repoCB) => {
+      (repo, index, repoCB) => {
         self.syncLabels.deleteLabelsFromRepo(repo, (error, labelsRemoved) => {
           labelsRemoved.forEach(label => {
-            // this just updates the repo with status of label removes
             self.repos[index].labelRemoved(
               label.label,
               label.error,
@@ -196,10 +217,11 @@ class Sync {
               label.removed
             );
           });
-          repoCB(error);
+          repoCB(null); // purposely not passing error so syncing will continue
         });
       },
       error => {
+        // not this error will always be null (see repoCB call above)
         return cb(error);
       }
     );

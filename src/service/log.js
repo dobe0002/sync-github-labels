@@ -18,7 +18,6 @@ const log = (...args) => {
   const messages = Array.prototype.slice.call(args);
   messages.unshift(_LOGSTARTERS.log);
   console.log.apply(console, messages);
-  // console.log.apply(console, args);
 };
 
 const error = (...args) => {
@@ -26,9 +25,14 @@ const error = (...args) => {
   messages.unshift(_LOGSTARTERS.error);
   console.error.apply(console, messages);
 };
+const debug = (mode, ...args) => {
+  if (mode === true) {
+    log(...args);
+  }
+};
 
 const _formatReport = (repo, type) => {
-  const method = {
+  const methods = {
     add: {
       text: 'Added',
       method: 'labelsAdded'
@@ -42,19 +46,18 @@ const _formatReport = (repo, type) => {
       method: 'labelsRemoved'
     }
   };
-  console.log(`+++++ Labels ${method[type].text} +++++`);
-  _.each(repo[method[type]], label => {
-    const errorText = label.error
-      ? `${_LOGSTARTERS.error} Error syncing: `
-      : '';
+  console.log(`+++++ Labels ${methods[type].text} +++++`);
+  _.each(repo[methods[type].method], label => {
+    const errorText =
+      label.error !== null ? `${_LOGSTARTERS.error} Error syncing: ` : '';
 
     const inuseText =
       type === 'remove' && label.inuse === true && label.removed === false
-        ? `${_LOGSTARTERS.warn} Not removed because in use: `
+        ? `${_LOGSTARTERS.warn} Not removed because in use `
         : '';
-    console.log(`${errorText}${inuseText}${label.label.name}`);
-    console.log(' ');
+    console.log(`${errorText}${label.label.name} ${inuseText}`);
   });
+  console.log(' ');
 };
 
 const report = repo => {
@@ -66,4 +69,4 @@ const report = repo => {
   _formatReport(repo, 'remove');
 };
 
-module.exports = { log, warn, error, report, _LOGSTARTERS };
+module.exports = { log, warn, error, debug, report, _LOGSTARTERS };

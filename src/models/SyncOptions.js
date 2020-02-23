@@ -6,26 +6,30 @@ const log = require('../service/log');
 class SyncOptions {
   constructor(userOptions) {
     const configFileJSON = SyncOptions._getConfigFile(
-      _.get(userOptions, 'config')
+      _.get(userOptions, 'config'),
+      'config'
     );
+
     const newOptions = SyncOptions._combineConfigFile(
       userOptions,
       configFileJSON
     );
 
-    this.syncInputFile = newOptions.inputFile || '';
-    this.syncInputRepo = newOptions.inputRepo || '';
+    this.syncInputFile = newOptions.inputFile || ''; // file that lists the master labels
+    this.syncInputRepo = newOptions.inputRepo || ''; // owner/repo that contains the master labels
     this.syncGithub = newOptions.github || '';
     this.syncToken = newOptions.token || '';
     this.syncOutputRepos = newOptions.outputRepos || []; // array of ['owner/repo', 'owner/repo']
     this.syncOutputRepoFile = newOptions.outputRepoFile || ''; // file with array of ['owner/repo', 'owner/repo']
-    // this.syncOutputOrg = newOptions.outputOrg || ''; TODO later
     this.syncSync = newOptions.sync || false;
     this.syncForce = newOptions.syncForce || false;
-
-    this.hasRequired();
+    this.debugMode = newOptions.debug || false;
   }
   /** * getters */
+
+  get debug() {
+    return this.debugMode;
+  }
 
   get inputFile() {
     return this.syncInputFile;
@@ -61,14 +65,24 @@ class SyncOptions {
 
   /* Set configs */
 
-  static _getConfigFile(configFile) {
-    let userConfigsFileJSON = '';
-    try {
-      userConfigsFileJSON = JSON.parse(
-        fs.readFileSync(path.join(__dirname, `${configFile}`), 'utf8')
-      );
-    } catch (error) {
-      log.log('User config file not found.');
+  static _getConfigFile(configFile, type = '') {
+    let userConfigsFileJSON = {};
+
+    if (configFile !== undefined && configFile !== '') {
+      try {
+        userConfigsFileJSON = JSON.parse(
+          fs.readFileSync(path.join(__dirname, `../../${configFile}`), 'utf8')
+        );
+      } catch (error) {
+        if (type === 'config') {
+          log.log('User config file not found.');
+        } else {
+          log.debug(
+            this.debugMode,
+            `Config file ${configFile} could not be found.`
+          );
+        }
+      }
     }
     return userConfigsFileJSON;
   }
@@ -78,15 +92,18 @@ class SyncOptions {
   }
 
   hasRequired() {
-    // TODO need to add github url
     let hasRequired = true;
     if (this.inputFile === '' && this.inputRepo === '') {
       hasRequired = false;
-      log.error('No source for the labels identified');
+      log.debug(this.debugMode, 'No source for the labels identified');
     }
     if (this.token === '') {
       hasRequired = false;
-      log.error('Missing GitHub token.');
+      log.debug(this.debugMode, 'Missing GitHub token.');
+    }
+    if (this.github === '') {
+      hasRequired = false;
+      log.debug(this.debugMode, 'No GitHub api url is not set.');
     }
     if (
       this.outputRepos === '' &&
@@ -94,7 +111,7 @@ class SyncOptions {
       this.syncOutputOrg === ''
     ) {
       hasRequired = false;
-      log.error('No destination for labels identified');
+      log.debug(this.debugMode, 'No destination for labels identified');
     }
     return hasRequired;
   }

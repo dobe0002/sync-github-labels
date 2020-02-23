@@ -13,17 +13,17 @@ class Repo {
 
   /** Set label status * */
 
-  labelAdded(label, error = false, inuse = false) {
+  labelAdded(label, error = null, inuse = false) {
     // label is a label object
     this.labelsAddedArray.push({ label, error, inuse });
   }
 
-  labelEdited(label, error = false, inuse = false) {
+  labelEdited(label, error = null, inuse = false) {
     // label is a label object
     this.labelsEditedArray.push({ label, error, inuse });
   }
 
-  labelRemoved(label, error = false, inuse = false, removed = false) {
+  labelRemoved(label, error = null, inuse = false, removed = false) {
     // label is a label object
     this.labelsRemovedArray.push({ label, error, inuse, removed });
   }

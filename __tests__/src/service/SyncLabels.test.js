@@ -47,7 +47,7 @@ describe('SyncLabels service tests', () => {
 
       expect(labelsAdded).toHaveLength(2);
       expect(labelsAdded[0].label).toEqual(masterLabels[0]);
-      expect(labelsAdded[0].error).toEqual(false);
+      expect(labelsAdded[0].error).toBeNull();
       expect(labelsAdded[0].inuse).toEqual(false);
       done();
     });
@@ -84,7 +84,7 @@ describe('SyncLabels service tests', () => {
 
       expect(labelsEdited).toHaveLength(2);
       expect(labelsEdited[0].label).toEqual(masterLabels[0]);
-      expect(labelsEdited[0].error).toEqual(false);
+      expect(labelsEdited[0].error).toBeNull();
       expect(labelsEdited[0].inuse).toEqual(false);
       done();
     });
@@ -116,7 +116,7 @@ describe('SyncLabels service tests', () => {
           color: '444444',
           description: 'This label should be removed'
         }),
-        error: false,
+        error: null,
         inuse: true,
         removed: true
       }
@@ -157,7 +157,7 @@ describe('SyncLabels service tests', () => {
           color: '222222',
           description: 'this label is not in master list but is in use'
         }),
-        error: false,
+        error: null,
         inuse: true,
         removed: false
       },
@@ -167,7 +167,7 @@ describe('SyncLabels service tests', () => {
           color: '444444',
           description: 'This label should be removed'
         }),
-        error: false,
+        error: null,
         inuse: false,
         removed: true
       }

@@ -87,7 +87,6 @@ try {
   log.log(`Command line parsing error: %s => ${e.message}`, 'error');
   process.exit(1);
 }
-// console.log('# opts:', opts);
 
 /* SHOW HELP */
 if (opts.help) {
@@ -109,4 +108,8 @@ if (opts.version) {
 /* CALL LABEL SYNC */
 const syncOptions = new SyncOptions(opts, options);
 const sync = new Sync(syncOptions);
-sync.syncLabels();
+// sync._hasRequired(() => {
+//
+// });
+sync.run();
+// sync.syncLabels();
