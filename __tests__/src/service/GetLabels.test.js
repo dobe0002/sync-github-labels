@@ -45,6 +45,7 @@ describe('GetLabels tests', () => {
     getLabels.url = 'myGitHubUrl';
     getLabels.fromRepo('myOwner', 'myRepo', (error, labels) => {
       expect(error).not.toBeNull();
+
       // expect(labels).not.toBeNull();
       done();
     });
