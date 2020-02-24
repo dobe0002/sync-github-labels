@@ -52,6 +52,22 @@ describe('SyncLabels service tests', () => {
       done();
     });
   });
+  test('add labels to a repo - failure is noted', done => {
+    repo.labels = [];
+    repo.masterLabels = masterLabels;
+    const addLabels = repo.labelsToAdd;
+    expect(addLabels).toHaveLength(2);
+
+    axios.setError('Failed to add label', 500);
+    syncLabels.addLabelsToRepo(repo, (error, labelsAdded) => {
+      expect(error).toBeNull();
+      expect(labelsAdded).toHaveLength(2);
+      expect(labelsAdded[0].label).toEqual(masterLabels[0]);
+      expect(labelsAdded[0].error).not.toBeNull();
+      expect(labelsAdded[0].inuse).toEqual(false);
+      done();
+    });
+  });
   test('edit labels to a repo', done => {
     repo.labels = [
       new Label({
@@ -85,6 +101,37 @@ describe('SyncLabels service tests', () => {
       expect(labelsEdited).toHaveLength(2);
       expect(labelsEdited[0].label).toEqual(masterLabels[0]);
       expect(labelsEdited[0].error).toBeNull();
+      expect(labelsEdited[0].inuse).toEqual(false);
+      done();
+    });
+  });
+
+  test('edit labels to a repo - failure is noted', done => {
+    repo.labels = [
+      new Label({
+        name: 'myNewLabel',
+        color: '111111',
+        description: 'THIS IS A NEW DESCRIPTION'
+      }),
+      new Label({
+        // note this shouldn't be picked up as an edit
+        name: 'myNewLabel2',
+        color: 'newColor',
+        description: 'my description'
+      })
+    ];
+    repo.masterLabels = masterLabels;
+    const editLabels = repo.labelsToEdit;
+    expect(editLabels).toHaveLength(2);
+
+    axios.setError('Failed to edit label', 500);
+
+    syncLabels.editLabelsToRepo(repo, (error, labelsEdited) => {
+      expect(error).toBeNull();
+
+      expect(labelsEdited).toHaveLength(2);
+      expect(labelsEdited[0].label).toEqual(masterLabels[0]);
+      expect(labelsEdited[0].error).not.toBeNull();
       expect(labelsEdited[0].inuse).toEqual(false);
       done();
     });
@@ -182,6 +229,51 @@ describe('SyncLabels service tests', () => {
       expect(error).toBeNull();
       expect(labelsRemoved).toHaveLength(2);
       expect(labelsRemoved).toEqual(expected);
+
+      done();
+    });
+  });
+
+  test('Delete Labels - record error if cannot determine if in use ', done => {
+    repo.labels = [
+      new Label({
+        name: 'removeMe',
+        color: '444444',
+        description: 'This label should be removed'
+      })
+    ];
+    axios.setInUseError('Cannot determine if label is in use', 500);
+    repo.masterLabels = masterLabels;
+
+    syncLabels.deleteLabelsFromRepo(repo, (error, labelsRemoved) => {
+      expect(error).toBeNull();
+      expect(labelsRemoved).toHaveLength(1);
+      expect(labelsRemoved[0].error).not.toBeNull();
+      expect(labelsRemoved[0].removed).toBeFalsy();
+
+      done();
+    });
+  });
+
+  test('Delete Labels - record error if delete failed ', done => {
+    repo.labels = [
+      new Label({
+        name: 'removeMe',
+        color: '444444',
+        description: 'This label should be removed'
+      })
+    ];
+    axios.setLabelsInUse(['removeMe']);
+    axios.setError('Cannot determine if label is in use', 500);
+
+    repo.masterLabels = masterLabels;
+    syncLabels._force = true;
+
+    syncLabels.deleteLabelsFromRepo(repo, (error, labelsRemoved) => {
+      expect(error).toBeNull();
+      expect(labelsRemoved).toHaveLength(1);
+      expect(labelsRemoved[0].error).not.toBeNull();
+      expect(labelsRemoved[0].removed).toBeFalsy();
 
       done();
     });

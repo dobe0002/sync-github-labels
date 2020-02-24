@@ -67,7 +67,16 @@ describe('Git service tests', () => {
     expect(axios.getCalls()[0].method).toEqual('patch');
     expect(axios.getCalls()[0].body).toEqual(labelToEdit.toObject);
   });
+  test('Edit label fail if token or github url is not set', async () => {
+    git.token = '';
+    const responseWithNoToken = await git.editLabel('myowner', 'myrepo');
+    expect(responseWithNoToken).toBeInstanceOf(Error);
 
+    git.token = 'myToken';
+    git.url = '';
+    const responseWithNoURL = await git.editLabel('myowner', 'myrepo');
+    expect(responseWithNoURL).toBeInstanceOf(Error);
+  });
   test('Delete label', async () => {
     const labelToEdit = new Label({
       name: 'mylabel',
@@ -82,6 +91,16 @@ describe('Git service tests', () => {
     expect(axios.getCalls()[0].endpoint).toEqual(
       'myGitUrl/repos/myOwner/myRepo/labels/mylabel'
     );
+  });
+  test('Delete label fail if token or github url is not set', async () => {
+    git.token = '';
+    const responseWithNoToken = await git.deleteLabel('myowner', 'myrepo');
+    expect(responseWithNoToken).toBeInstanceOf(Error);
+
+    git.token = 'myToken';
+    git.url = '';
+    const responseWithNoURL = await git.deleteLabel('myowner', 'myrepo');
+    expect(responseWithNoURL).toBeInstanceOf(Error);
   });
 
   test('Catch that label is in use - all issues', async () => {
@@ -133,5 +152,15 @@ describe('Git service tests', () => {
     expect(axios.getCalls()[0].endpoint).toEqual(
       'myGitUrl/search/issues?q=repo:myOwner/myRepo+label:myLabelThatIsNotInuse+is:open'
     );
+  });
+  test('Check for label in use fail if token or github url is not set', async () => {
+    git.token = '';
+    const responseWithNoToken = await git.isLabelInUse('myowner', 'myrepo');
+    expect(responseWithNoToken).toBeInstanceOf(Error);
+
+    git.token = 'myToken';
+    git.url = '';
+    const responseWithNoURL = await git.isLabelInUse('myowner', 'myrepo');
+    expect(responseWithNoURL).toBeInstanceOf(Error);
   });
 });

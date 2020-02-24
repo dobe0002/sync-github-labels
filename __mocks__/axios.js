@@ -4,6 +4,7 @@ let labelsFromRepo = [];
 let labelsInUse = [];
 
 let error = '';
+let inUseError = '';
 let calls = [];
 
 const isAuthorized = headers => {
@@ -41,6 +42,7 @@ module.exports = {
   reset() {
     labelsFromRepo = [];
     error = '';
+    inUseError = '';
     calls = [];
     labelsInUse = [];
   },
@@ -48,23 +50,29 @@ module.exports = {
     error = new Error(msg);
     error.status = code;
   },
+  setInUseError(msg, code = 500) {
+    inUseError = new Error(msg);
+    inUseError.status = code;
+  },
 
   get: jest.fn((endpoint, options) => {
     calls.push({ endpoint, method: 'get', body: '' });
     isAuthorized(options.headers);
 
-    if (error !== '') {
-      return Promise.reject(error);
-    }
-
     switch (true) {
       case /search/.test(endpoint): {
+        if (inUseError !== '') {
+          return Promise.reject(inUseError);
+        }
         const label = getLabelName(endpoint);
         const found = _.find(labelsInUse, l => l === label) ? 1 : 0;
 
         return Promise.resolve({ data: { total_count: found }, status: 200 });
       }
       case /labels/.test(endpoint):
+        if (error !== '') {
+          return Promise.reject(error);
+        }
         return Promise.resolve({ data: labelsFromRepo, status: 200 });
       default:
         return Promise.reject(

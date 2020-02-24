@@ -108,8 +108,4 @@ if (opts.version) {
 /* CALL LABEL SYNC */
 const syncOptions = new SyncOptions(opts, options);
 const sync = new Sync(syncOptions);
-// sync._hasRequired(() => {
-//
-// });
 sync.run();
-// sync.syncLabels();

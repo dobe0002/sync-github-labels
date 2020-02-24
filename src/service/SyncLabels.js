@@ -1,4 +1,5 @@
 const async = require('async');
+const _ = require('lodash');
 const Labels = require('./Labels');
 const log = require('./log');
 
@@ -134,7 +135,7 @@ class SyncLabels extends Labels {
                 label,
                 error,
                 inuse,
-                removed: true
+                removed: _.isNull(error)
               });
               labelCB(null); // Purposely sending null instead of error so syncing will continue
             });

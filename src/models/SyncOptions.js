@@ -65,7 +65,7 @@ class SyncOptions {
 
   /* Set configs */
 
-  static _getConfigFile(configFile, type = '') {
+  static _getConfigFile(configFile) {
     let userConfigsFileJSON = {};
 
     if (configFile !== undefined && configFile !== '') {
@@ -74,14 +74,12 @@ class SyncOptions {
           fs.readFileSync(path.join(__dirname, `../../${configFile}`), 'utf8')
         );
       } catch (error) {
-        if (type === 'config') {
-          log.log('User config file not found.');
-        } else {
-          log.debug(
-            this.debugMode,
-            `Config file ${configFile} could not be found.`
-          );
-        }
+        log.log('User config file not found.');
+        log.debug(
+          this.debugMode,
+          `Config file ${configFile} could not be found.`,
+          error
+        );
       }
     }
     return userConfigsFileJSON;
@@ -105,11 +103,7 @@ class SyncOptions {
       hasRequired = false;
       log.debug(this.debugMode, 'No GitHub api url is not set.');
     }
-    if (
-      this.outputRepos === '' &&
-      this.outputRepoFile === '' &&
-      this.syncOutputOrg === ''
-    ) {
+    if (this.syncOutputRepos.length === 0 && this.syncOutputRepoFile === '') {
       hasRequired = false;
       log.debug(this.debugMode, 'No destination for labels identified');
     }

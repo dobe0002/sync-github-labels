@@ -53,16 +53,16 @@ const _formatReport = (repo, type) => {
 
     const inuseText =
       type === 'remove' && label.inuse === true && label.removed === false
-        ? `${_LOGSTARTERS.warn} Not removed because in use `
+        ? ` ${_LOGSTARTERS.warn} Not removed because in use `
         : '';
-    console.log(`${errorText}${label.label.name} ${inuseText}`);
+    console.log(`${errorText}${label.label.name}${inuseText}`);
   });
   console.log(' ');
 };
 
 const report = repo => {
   console.log('*******************************************');
-  console.log('REPO: ', `${repo.owner}/${repo.name}`);
+  console.log('REPO:', `${repo.owner}/${repo.name}`);
   console.log(' ');
   _formatReport(repo, 'add');
   _formatReport(repo, 'edit');
