@@ -153,7 +153,6 @@ class SyncLabels extends Labels {
       },
       error => {
         return cb(error, labelsRemoved);
-        const badVar = 'badVar4';
       }
     );
   }
