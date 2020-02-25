@@ -98,7 +98,6 @@ class Git {
         Accept: 'application/vnd.github.symmetra-preview+json'
       }
     });
-    // TODO catch errors
     return !!(response.data.total_count && response.data.total_count > 0);
   }
 }

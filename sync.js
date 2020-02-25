@@ -39,18 +39,20 @@ const options = [
   {
     names: ['outputRepos', 'o'],
     type: 'arrayOfString',
-    help: 'Array of owner/repo for the GitHub repos that will be synced.'
+    help:
+      ' Owner/repo for the GitHub repos that will be synced.  Note: multiple outputRepo can be passed.'
   },
   {
     names: ['outputRepoFile'],
-    type: 'arrayOfString',
+    type: 'string',
     help:
       'Path to file that contains an array of owner/repo for the GitHub repos that will be synced.'
   },
   {
     names: ['outputOrg'],
     type: 'string',
-    help: 'Organization where every repo will be synced.'
+    help:
+      'Organization where every repo will be synced.  NOTE: This currently is not in use.'
   },
   {
     names: ['sync', 's'],
