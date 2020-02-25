@@ -162,6 +162,5 @@ describe('Git service tests', () => {
     git.url = '';
     const responseWithNoURL = await git.isLabelInUse('myowner', 'myrepo');
     expect(responseWithNoURL).toBeInstanceOf(Error);
-    let foo;
   });
 });

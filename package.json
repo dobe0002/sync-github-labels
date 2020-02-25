@@ -49,5 +49,72 @@
     "jest": "^25.1.0",
     "jest-cli": "^25.1.0"
   },
-  "@comment devDependencies": []
+  "lint-staged": {
+    "{src,__tests__}/**/*.{js,jsx}": [
+      "jsFiles => jsFiles.map(jsFile => `npm run lint ${jsFile}`) "
+    ]
+  },
+  "pre-commit": "lint-staged",
+  "eslintConfig": {
+    "extends": [
+      "airbnb",
+      "airbnb/hooks",
+      "prettier"
+    ],
+    "globals": {
+      "styles": true
+    },
+    "env": {
+      "jest": true,
+      "es6": true,
+      "node": true
+    },
+    "parser": "babel-eslint",
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": "error",
+      "no-var": "error",
+      "curly": "error",
+      "one-var": "error",
+      "no-console": "error",
+      "no-underscore-dangle": "off"
+    }
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ],
+    "ignore": [
+      "node_modules"
+    ],
+    "sourceMap": "inline",
+    "retainLines": true
+  },
+  "prettier": {
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "printWidth": 80
+  },
+  "jest":{
+  "transform": {
+    "^.+\\.[t|j]sx?$": "babel-jest"
+  },
+  "collectCoverage": true,
+"collectCoverageFrom": [
+    "**/*.{js,jsx}",
+    "!**/node_modules/**",
+    "!**/coverage/**",
+    "!**/jest.config.js",
+    "!**/lint-staged.config.js",
+    "!**/__fixtures__/** ",
+    "!**/utils/** "
+  ],
+  "coverageReporters": ["html", "cobertura", "json-summary", "text-summary"]
+}
 }
