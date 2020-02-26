@@ -87,6 +87,7 @@ The JSON file will need to be formatted this way:
     "kkd-test-org/BBB_Tester"
   ]
 }
+
 ```
 
 You will need to know the relative path from the root of the project to your JSON file.
@@ -95,10 +96,14 @@ You will need to know the relative path from the root of the project to your JSO
 
 ## Making a sync
 
-To call the syncing script, in a terminal, navigation to the root of the project then type the following:
+To call the syncing script, in a terminal, navigation to the root of the project then type  one of hte the following:
 
 ```
 node sync.js
+```
+OR
+```
+npm run sync -- 
 ```
 
 Most likely, this won't work because you need to pass in the master labels and output repositories. There are numerous flags you can add. All of them are available by using the help flag: `node sync.js --help`
@@ -108,7 +113,7 @@ Most likely, this won't work because you need to pass in the master labels and o
 | `--inputFile`     | Path to a local JSON file containing label information. Use this feature **OR** `--inputRepo`                                                                                                                                       |
 | `--inputRepo`     | The owner/repo for the GitHub repo that contains the labels you would like to copy from. Use this feature **OR** `--inputFile`                                                                                                      |
 | `--outputRepos`   | Owner/repo for the GitHub repo that will be synced. Note: You can pass multiple outputRepos flags. Example: `--inputRepo kkd-test-org/Holder_Repo --outputRepos kkd-test-org/AAA_Tester`. Use this feature **OR** `--outputRepFile` |
-| `--outputRepFile` | Path to file that contains an array of owner/repo for the GitHub repos that will be synced. Use this feature **OR** `--outputRepos`                                                                                                 |
+| `--outputRepoFile` | Path to file that contains an array of owner/repo for the GitHub repos that will be synced. Use this feature **OR** `--outputRepos`                                                                                                 |
 | `--sync`          | When set to true, the script will remove labels not listed in the master labels file/repo and are not in use in the output repo.                                                                                                    |
 | `--syncForce`     | When set, all labels that are not listed in the master labels file/repo will be removed, regardless if they are used or not. This flag should be used with the `--sync` flag.                                                       |
 

@@ -6,6 +6,7 @@
   "license": "MIT",
   "author": "Kim Doberstein",
   "scripts": {
+    "sync": "node sync.js ",
     "clean": "rm -f package-lock.json && rm -rf node_modules  && npm i",
     "test": "jest",
     "----------------------------------------------------------1": "",

@@ -125,6 +125,7 @@ class Sync {
     if (repos.length === 0) {
       error = `No output repos identified`;
     }
+    // TODO change this to lodash map to prevent thrown exception when repo is undefined
     this.repos = repos.map(repo => {
       const repoObj = new Repo();
       repoObj.fullName = repo;

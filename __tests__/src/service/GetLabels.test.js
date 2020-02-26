@@ -43,10 +43,10 @@ describe('GetLabels tests', () => {
     axios.setError('label not found', 404);
     getLabels.token = 'myGitHubToken';
     getLabels.url = 'myGitHubUrl';
-    getLabels.fromRepo('myOwner', 'myRepo', (error, labels) => {
+    getLabels.fromRepo('myOwner', 'myRepo', error => {
+      // note labels are also passed: ... (error, labels) => { ...
       expect(error).not.toBeNull();
 
-      // expect(labels).not.toBeNull();
       done();
     });
   });

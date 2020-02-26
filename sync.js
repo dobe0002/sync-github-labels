@@ -43,7 +43,7 @@ const options = [
       ' Owner/repo for the GitHub repos that will be synced.  Note: multiple outputRepo can be passed.'
   },
   {
-    names: ['outputRepoFile'],
+    names: ['outputRepoFile', 'r'],
     type: 'string',
     help:
       'Path to file that contains an array of owner/repo for the GitHub repos that will be synced.'
