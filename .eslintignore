@@ -1,0 +1,8 @@
+/build/*
+/coverage/*
+/node_modules/*
+package-lock.json
+.huskyrc.js
+.prettierrc.json
+lint-staged.config.js
+package.json

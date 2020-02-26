@@ -1,0 +1,6 @@
+node_modules/
+.vscode/
+coverage/
+config.json
+notes.md
+config.json
