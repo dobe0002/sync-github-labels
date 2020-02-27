@@ -83,6 +83,12 @@ const options = [
     type: 'bool',
     help:
       'Prevent delete labels that are used in active/open issues.  Note when this is true, labels will be removed only if they are used on closed issues.'
+  },
+  {
+    names: ['debug', 'b'],
+    type: 'bool',
+    help:
+      'If addeded or set to true, the application will add debug statements to the console.'
   }
 ];
 

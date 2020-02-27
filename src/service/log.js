@@ -6,7 +6,8 @@ const _ = require('lodash');
 const _LOGSTARTERS = {
   warn: '*** ',
   log: '',
-  error: '!!!!! '
+  error: '!!!!! ',
+  debug: '~~~ '
 };
 
 const warn = (...args) => {
@@ -27,7 +28,9 @@ const error = (...args) => {
 };
 const debug = (mode, ...args) => {
   if (mode === true) {
-    log(...args);
+    const messages = Array.prototype.slice.call(args);
+    messages.unshift(_LOGSTARTERS.debug);
+    console.log.apply(console, messages);
   }
 };
 

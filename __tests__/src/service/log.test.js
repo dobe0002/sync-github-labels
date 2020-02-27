@@ -60,7 +60,9 @@ describe('log tests', () => {
   test('Debug statements show if debug is set to true', () => {
     log.debug(true, 'you should see me');
     expect(console.log).toHaveBeenCalled();
-    expect(outputLogData).toEqual(`${log._LOGSTARTERS.log} you should see me`);
+    expect(outputLogData).toEqual(
+      `${log._LOGSTARTERS.debug} you should see me`
+    );
   });
 
   test('Creates proper end of run report for a given repo', () => {
