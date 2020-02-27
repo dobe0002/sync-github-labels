@@ -77,6 +77,12 @@ const options = [
     names: ['version', 'v'],
     type: 'bool',
     help: 'Print the version of the application and exit.'
+  },
+  {
+    names: ['active', 'a'],
+    type: 'bool',
+    help:
+      'Prevent delete labels that are used in active/open issues.  Note when this is true, labels will be removed only if they are used on closed issues.'
   }
 ];
 

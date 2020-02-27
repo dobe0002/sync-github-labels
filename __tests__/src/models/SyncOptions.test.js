@@ -13,7 +13,8 @@ describe('Sync Options Model tests', () => {
   beforeEach(() => {
     inputFromCLI = {
       inputFile: 'myInputFile',
-      github: 'myGitHub'
+      github: 'myGitHub',
+      outputRepoFile: 'myOutPutRepFilePath'
     };
     syncOptions = new SyncOptions(inputFromCLI);
   });
@@ -25,6 +26,12 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions.inputRepo).toBeFalsy();
     expect(syncOptions.github).toEqual('myGitHub');
     expect(syncOptions.token).toBeFalsy();
+
+    expect(syncOptions.debug).toBeFalsy();
+    expect(syncOptions.active).toBeFalsy();
+    expect(syncOptions.outputRepoFile).toEqual('myOutPutRepFilePath');
+    expect(syncOptions.sync).toBeFalsy();
+    expect(syncOptions.force).toBeFalsy();
   });
   test('Getters, with config file', () => {
     inputFromCLI.config = '__fixtures__/config.json';
@@ -33,6 +40,12 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions.inputRepo).toBeFalsy();
     expect(syncOptions.github).toEqual('myGitHub');
     expect(syncOptions.token).toEqual('MyGitHubToken');
+
+    expect(syncOptions.debug).toBeTruthy();
+    expect(syncOptions.active).toBeTruthy();
+    expect(syncOptions.outputRepoFile).toEqual('myOutPutRepFilePath'); // note this is pulled from inputFromCLI
+    expect(syncOptions.sync).toBeTruthy();
+    expect(syncOptions.force).toBeTruthy();
   });
   test('Cannot find config file', () => {
     inputFromCLI.config = '__fixtures__/cannotFindMe.json';

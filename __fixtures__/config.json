@@ -1,4 +1,8 @@
 {
   "inputFile": "MyNewInputFile",
-  "token": "MyGitHubToken"
+  "token": "MyGitHubToken",
+  "debug": true,
+  "active": true,
+  "sync": true,
+  "syncForce": true
 }

@@ -24,6 +24,7 @@ class SyncOptions {
     this.syncSync = newOptions.sync || false;
     this.syncForce = newOptions.syncForce || false;
     this.debugMode = newOptions.debug || false;
+    this.onlyActive = newOptions.active || false;
   }
   /** * getters */
 
@@ -45,6 +46,10 @@ class SyncOptions {
 
   get token() {
     return this.syncToken;
+  }
+
+  get active() {
+    return this.onlyActive;
   }
 
   get outputRepos() {
