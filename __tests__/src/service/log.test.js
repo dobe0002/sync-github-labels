@@ -2,56 +2,34 @@
 const log = require('../../../src/service/log');
 const Repo = require('../../../src/models/Repo');
 const Label = require('../../../src/models/Label');
+const mockLog = require('../../../src/service/mockLog');
 
 describe('log tests', () => {
-  // mocks console.log
-  let outputLogData = '';
-  const storeLog = (...args) => {
-    outputLogData += args;
-    outputLogData = outputLogData.replace(/,/g, ' ');
-  };
-  console.log = jest.fn(storeLog);
-
-  // mocks console.error
-  let outputErrorData = '';
-  const storeError = (...args) => {
-    outputErrorData += args;
-    outputErrorData = outputErrorData.replace(/,/g, ' ');
-  };
-  console.error = jest.fn(storeError);
-
-  // mocks console.warn
-  let outputWarnData = '';
-  const storeWarn = (...args) => {
-    outputWarnData += args;
-    outputWarnData = outputWarnData.replace(/,/g, ' ');
-  };
-  console.warn = jest.fn(storeWarn);
+  console.log = jest.fn(mockLog.log);
+  console.error = jest.fn(mockLog.error);
+  console.warn = jest.fn(mockLog.warn);
 
   beforeEach(() => {
-    outputErrorData = '';
-    outputLogData = '';
-    outputWarnData = '';
-
     console.error.mockClear();
     console.log.mockClear();
     console.warn.mockClear();
+    mockLog.clear();
   });
 
   test('Logs level log with correctly', () => {
     log.log('hello', 'world');
     expect(console.log).toHaveBeenCalled();
-    expect(outputLogData).toEqual(`${log._LOGSTARTERS.log} hello world`);
+    expect(mockLog.getLog()).toEqual(`${log._LOGSTARTERS.log} hello world`);
   });
   test('Logs level error with correctly', () => {
     log.error('hello', 'world');
     expect(console.error).toHaveBeenCalled();
-    expect(outputErrorData).toEqual(`${log._LOGSTARTERS.error} hello world`);
+    expect(mockLog.getError()).toEqual(`${log._LOGSTARTERS.error} hello world`);
   });
   test('Logs level warn with correctly', () => {
     log.warn('hello', 'world');
     expect(console.warn).toHaveBeenCalled();
-    expect(outputWarnData).toEqual(`${log._LOGSTARTERS.warn} hello world`);
+    expect(mockLog.getWarn()).toEqual(`${log._LOGSTARTERS.warn} hello world`);
   });
   test('Debug statements do not show if debug is set to false', () => {
     log.debug(false, 'you should not see me');
@@ -60,7 +38,7 @@ describe('log tests', () => {
   test('Debug statements show if debug is set to true', () => {
     log.debug(true, 'you should see me');
     expect(console.log).toHaveBeenCalled();
-    expect(outputLogData).toEqual(
+    expect(mockLog.getLog()).toEqual(
       `${log._LOGSTARTERS.debug} you should see me`
     );
   });
@@ -81,6 +59,6 @@ describe('log tests', () => {
 
     log.report(repo);
     expect(console.log).toHaveBeenCalled();
-    expect(outputLogData).toEqual(expected);
+    expect(mockLog.getLog()).toEqual(expected);
   });
 });

@@ -1,25 +1,22 @@
+/* eslint-disable no-console */
 import SyncOptions from '../../../src/models/SyncOptions';
 import log from '../../../src/service/log';
+import mockLog from '../../../src/service/mockLog';
 
 describe('Sync Options Model tests', () => {
   let syncOptions = {};
   let inputFromCLI = {};
-  let outputLogData = '';
-  const storeLog = (...args) => {
-    outputLogData += args;
-    outputLogData = outputLogData.replace(/,/g, ' ');
-  };
-  log.log = jest.fn(storeLog);
 
-  let outputErrorData = '';
-  const storeError = (...args) => {
-    outputErrorData += args;
-    outputErrorData = outputErrorData.replace(/,/g, ' ');
-  };
-  log.error = jest.fn(storeError);
+  console.log = jest.fn(mockLog.log);
+  console.error = jest.fn(mockLog.error);
+  console.warn = jest.fn(mockLog.warn);
+
   beforeEach(() => {
-    outputLogData = '';
-    outputErrorData = '';
+    console.error.mockClear();
+    console.log.mockClear();
+    console.warn.mockClear();
+    mockLog.clear();
+
     inputFromCLI = {
       inputFile: 'myInputFile',
       github: 'myGitHub',
@@ -128,26 +125,26 @@ describe('Sync Options Model tests', () => {
   test('Cannot find config file', () => {
     inputFromCLI.config = '__fixtures__/cannotFindMe.json';
     syncOptions = new SyncOptions(inputFromCLI);
-    expect(log.error).toHaveBeenCalled();
-    expect(outputErrorData).toEqual(
-      'Unable to get config file __fixtures__/cannotFindMe.json'
+    expect(console.error).toHaveBeenCalled();
+    expect(mockLog.getError()).toEqual(
+      `${log._LOGSTARTERS.error} Unable to get config file __fixtures__/cannotFindMe.json`
     );
   });
 
   test('Log error when sent config file cannot be read', () => {
     inputFromCLI.config = '__fixtures__/bad.json';
     syncOptions = new SyncOptions(inputFromCLI);
-    expect(log.error).toHaveBeenCalled();
-    expect(outputErrorData).toEqual(
-      'Unable to get config file __fixtures__/bad.json'
+    expect(console.error).toHaveBeenCalled();
+    expect(mockLog.getError()).toEqual(
+      `${log._LOGSTARTERS.error} Unable to get config file __fixtures__/bad.json`
     );
   });
-  test.only('Error is given when a non .json or non .js file is given as a config file', () => {
+  test('Error is given when a non .json or non .js file is given as a config file', () => {
     inputFromCLI.config = '__fixtures__/sample.html';
     syncOptions = new SyncOptions(inputFromCLI);
-    expect(log.error).toHaveBeenCalled();
-    expect(outputErrorData).toEqual(
-      'Unable to get config file __fixtures__/sample.html'
+    expect(console.error).toHaveBeenCalled();
+    expect(mockLog.getError()).toEqual(
+      `${log._LOGSTARTERS.error} Unable to get config file __fixtures__/sample.html`
     );
   });
   test('.json based config file is used before .js based file ', () => {});
