@@ -34,7 +34,7 @@ const options = [
     names: ['config', 'c'],
     type: 'string',
     help: 'Path to configuration file.',
-    default: 'config.json'
+    default: '' // NOTE: in src/models/SyncOption the code will look for config.json and then config.js be default
   },
   {
     names: ['outputRepos', 'o'],

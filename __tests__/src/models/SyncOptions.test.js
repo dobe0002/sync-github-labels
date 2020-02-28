@@ -10,7 +10,16 @@ describe('Sync Options Model tests', () => {
     outputLogData = outputLogData.replace(/,/g, ' ');
   };
   log.log = jest.fn(storeLog);
+
+  let outputErrorData = '';
+  const storeError = (...args) => {
+    outputErrorData += args;
+    outputErrorData = outputErrorData.replace(/,/g, ' ');
+  };
+  log.error = jest.fn(storeError);
   beforeEach(() => {
+    outputLogData = '';
+    outputErrorData = '';
     inputFromCLI = {
       inputFile: 'myInputFile',
       github: 'myGitHub',
@@ -22,6 +31,9 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions).toBeInstanceOf(SyncOptions);
   });
   test('Getters, no config file', () => {
+    syncOptions._jsonConfig = '';
+    syncOptions._jsConfig = '';
+
     expect(syncOptions.inputFile).toEqual('myInputFile');
     expect(syncOptions.inputRepo).toBeFalsy();
     expect(syncOptions.github).toEqual('myGitHub');
@@ -47,11 +59,7 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions.sync).toBeTruthy();
     expect(syncOptions.force).toBeTruthy();
   });
-  test('Cannot find config file', () => {
-    inputFromCLI.config = '__fixtures__/cannotFindMe.json';
-    syncOptions = new SyncOptions(inputFromCLI);
-    expect(log.log).toHaveBeenCalled();
-  });
+
   test('Has required - pass', () => {
     inputFromCLI.token = 'myToken';
     inputFromCLI.outputRepoFile = 'myOutputFile';
@@ -101,4 +109,48 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions.outputFile).toBeFalsy();
     expect(syncOptions.hasRequired()).toBeFalsy();
   });
+
+  test('Pull configs from a .js based config file', () => {
+    inputFromCLI.config = '__fixtures__/config.js';
+    syncOptions = new SyncOptions(inputFromCLI);
+    expect(syncOptions.inputFile).toEqual('MyNewInputFileFromJSConfig');
+    expect(syncOptions.inputRepo).toBeFalsy();
+    expect(syncOptions.github).toEqual('myGitHub');
+    expect(syncOptions.token).toEqual('MyNewInputFileFromJSConfig');
+
+    expect(syncOptions.debug).toBeTruthy();
+    expect(syncOptions.active).toBeTruthy();
+    expect(syncOptions.outputRepoFile).toEqual('myOutPutRepFilePath'); // note this is pulled from inputFromCLI
+    expect(syncOptions.sync).toBeTruthy();
+    expect(syncOptions.force).toBeTruthy();
+  });
+
+  test('Cannot find config file', () => {
+    inputFromCLI.config = '__fixtures__/cannotFindMe.json';
+    syncOptions = new SyncOptions(inputFromCLI);
+    expect(log.error).toHaveBeenCalled();
+    expect(outputErrorData).toEqual(
+      'Unable to get config file __fixtures__/cannotFindMe.json'
+    );
+  });
+
+  test('Log error when sent config file cannot be read', () => {
+    inputFromCLI.config = '__fixtures__/bad.json';
+    syncOptions = new SyncOptions(inputFromCLI);
+    expect(log.error).toHaveBeenCalled();
+    expect(outputErrorData).toEqual(
+      'Unable to get config file __fixtures__/bad.json'
+    );
+  });
+  test.only('Error is given when a non .json or non .js file is given as a config file', () => {
+    inputFromCLI.config = '__fixtures__/sample.html';
+    syncOptions = new SyncOptions(inputFromCLI);
+    expect(log.error).toHaveBeenCalled();
+    expect(outputErrorData).toEqual(
+      'Unable to get config file __fixtures__/sample.html'
+    );
+  });
+  test('.json based config file is used before .js based file ', () => {});
+  test('Default .json configuration  is config.json', () => {});
+  test('Default .json configuration  is config.json', () => {});
 });

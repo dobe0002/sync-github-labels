@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
@@ -25,6 +27,9 @@ class SyncOptions {
     this.syncForce = newOptions.syncForce || false;
     this.debugMode = newOptions.debug || false;
     this.onlyActive = newOptions.active || false;
+
+    this.defaultJsonConfig = 'config.json';
+    this.defaultJSConfig = 'config.js';
   }
   /** * getters */
 
@@ -68,26 +73,91 @@ class SyncOptions {
     return this.syncForce;
   }
 
-  /* Set configs */
+  set _jsonConfig(configFile) {
+    // this is only used for testing
+    this.defaultJsonConfig = configFile;
+  }
+
+  set _jsConfig(configFile) {
+    // this is only used for testing
+    this.defaultJSConfig = configFile;
+  }
 
   static _getConfigFile(configFile) {
     let userConfigsFileJSON = {};
 
+    // TODO this fails tests because the tests are picking up my config.json file
+    // So I'm wondering if we need a way to set in empty config file
+    // NEED a way to set the default config file names that can be over written
+
     if (configFile !== undefined && configFile !== '') {
+      // User passed a config file in the CLI
       try {
-        userConfigsFileJSON = JSON.parse(
-          fs.readFileSync(path.join(__dirname, `../../${configFile}`), 'utf8')
-        );
-      } catch (error) {
-        log.log('User config file not found.');
-        log.debug(
-          this.debugMode,
-          `Config file ${configFile} could not be found.`,
-          error
-        );
+        userConfigsFileJSON = SyncOptions._getFile(configFile);
+      } catch (err) {
+        log.error(`Unable to get config file ${configFile}`);
+      }
+    } else {
+      // No config file passed, so try defaults
+      try {
+        userConfigsFileJSON = SyncOptions._getFile(this.defaultJsonConfig);
+      } catch (err) {
+        try {
+          userConfigsFileJSON = SyncOptions._getFile(this.defaultJSConfig);
+        } catch (error) {
+          log.log(`No user config file found.`);
+        }
       }
     }
     return userConfigsFileJSON;
+  }
+
+  static _getFile(fileName) {
+    const filePath = path.join(__dirname, `../../${fileName}`);
+    const extension = path.extname(fileName);
+    let json = {};
+    /*
+    try {
+      if (extension === '.json') {
+        json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      } else if (extension === '.js') {
+        json = require(filePath);
+      } else {
+        log.debug(
+          this.debugMode,
+          `Config file ${fileName} does not end in .json nor .js`
+        );
+        throw new Error('Unknown config file type');
+      }
+    } catch (err) {
+      log.debug(this.debugMode, `Error trying to get file  ${fileName}`, err);
+      throw new Error(`Error trying to get file ${fileName}`);
+    }
+    return json;
+
+    */
+    if (extension === '.json') {
+      try {
+        json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      } catch (err) {
+        log.debug(this.debugMode, `Error reading .json file ${fileName}`, err);
+        throw new Error(`Error reading .json file  ${fileName}`);
+      }
+    } else if (extension === '.js') {
+      try {
+        json = require(filePath);
+      } catch (err) {
+        log.debug(this.debugMode, `Error reading .js file  ${fileName}`, err);
+        throw new Error(`Error reading .js file  ${fileName}`);
+      }
+    } else {
+      log.debug(
+        this.debugMode,
+        `Config file ${fileName} does not end in .json nor .js`
+      );
+      throw new Error(`Config file ${fileName} does not end in .json nor .js`);
+    }
+    return json;
   }
 
   static _combineConfigFile(userConfig, configFile) {
