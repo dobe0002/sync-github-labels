@@ -12,6 +12,17 @@ This command line application will sync labels between GitHub repositories. This
 1. Copy `config.example.json` to `config.json` at the root of the project
 1. Inside of `config.json` enter the correct GitHub api URL and your [GitHub personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 
+
+## Quick start
+After completing the set-up steps above, in a terminal, at the root of the project, type in the following:
+```
+npm run sync -- --inputRepo input_owner/input_repo --outputRepos output_owner/output_repo
+```
+
+Replace **input_owner/input_repo** with the owner/repo of the repository that contains the labels you want to copy.  For example `kkd-test-org/Tester_Repo`
+
+Replace **output_owner/output_repo** with the owner/repo of the repository that contains the labels you want to copy.  For example `kkd-test-org/Another_Repo`
+
 ---
 
 ## Master labels
