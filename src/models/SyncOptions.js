@@ -7,10 +7,13 @@ const log = require('../service/log');
 
 class SyncOptions {
   constructor(userOptions) {
-    const configFileJSON = SyncOptions._getConfigFile(
-      _.get(userOptions, 'config'),
-      'config'
+    this.userOptions = userOptions; // Configs sent in when object was created
+
+    const configFileJSON = this._getConfigFile(
+      _.get(this.userOptions, 'config')
     );
+    this.combineWithConfigFile(configFileJSON);
+    /*
 
     const newOptions = SyncOptions._combineConfigFile(
       userOptions,
@@ -27,10 +30,30 @@ class SyncOptions {
     this.syncForce = newOptions.syncForce || false;
     this.debugMode = newOptions.debug || false;
     this.onlyActive = newOptions.active || false;
+    */
 
     this.defaultJsonConfig = 'config.json';
     this.defaultJSConfig = 'config.js';
   }
+
+  combineWithConfigFile(configFileJSON) {
+    const newOptions = _.merge(this.userOptions, configFileJSON);
+    this.syncInputFile = newOptions.inputFile || ''; // file that lists the master labels
+    this.syncInputRepo = newOptions.inputRepo || ''; // owner/repo that contains the master labels
+    this.syncGithub = newOptions.github || '';
+    this.syncToken = newOptions.token || '';
+    this.syncOutputRepos = newOptions.outputRepos || []; // array of ['owner/repo', 'owner/repo']
+    this.syncOutputRepoFile = newOptions.outputRepoFile || ''; // file with array of ['owner/repo', 'owner/repo']
+    this.syncSync = newOptions.sync || false;
+    this.syncForce = newOptions.syncForce || false;
+    this.debugMode = newOptions.debug || false;
+    this.onlyActive = newOptions.active || false;
+  }
+
+  static _combineConfigFile(userConfig, configFile) {
+    return _.merge(userConfig, configFile);
+  }
+
   /** * getters */
 
   get debug() {
@@ -83,12 +106,8 @@ class SyncOptions {
     this.defaultJSConfig = configFile;
   }
 
-  static _getConfigFile(configFile) {
+  _getConfigFile(configFile) {
     let userConfigsFileJSON = {};
-
-    // TODO this fails tests because the tests are picking up my config.json file
-    // So I'm wondering if we need a way to set in empty config file
-    // NEED a way to set the default config file names that can be over written
 
     if (configFile !== undefined && configFile !== '') {
       // User passed a config file in the CLI
@@ -116,26 +135,6 @@ class SyncOptions {
     const filePath = path.join(__dirname, `../../${fileName}`);
     const extension = path.extname(fileName);
     let json = {};
-    /*
-    try {
-      if (extension === '.json') {
-        json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      } else if (extension === '.js') {
-        json = require(filePath);
-      } else {
-        log.debug(
-          this.debugMode,
-          `Config file ${fileName} does not end in .json nor .js`
-        );
-        throw new Error('Unknown config file type');
-      }
-    } catch (err) {
-      log.debug(this.debugMode, `Error trying to get file  ${fileName}`, err);
-      throw new Error(`Error trying to get file ${fileName}`);
-    }
-    return json;
-
-    */
     if (extension === '.json') {
       try {
         json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -146,9 +145,15 @@ class SyncOptions {
     } else if (extension === '.js') {
       try {
         json = require(filePath);
+        if (json === {} || _.isEmpty(json)) {
+          log.debug(
+            this.debugMode,
+            `Config file ${fileName} appears to be an empty object.  Could be unreadable nothing is exported.`
+          );
+          throw new Error(`Config file ${fileName} appears empty.`);
+        }
       } catch (err) {
         log.debug(this.debugMode, `Error reading .js file  ${fileName}`, err);
-        throw new Error(`Error reading .js file  ${fileName}`);
       }
     } else {
       log.debug(
@@ -158,10 +163,6 @@ class SyncOptions {
       throw new Error(`Config file ${fileName} does not end in .json nor .js`);
     }
     return json;
-  }
-
-  static _combineConfigFile(userConfig, configFile) {
-    return _.merge(userConfig, configFile);
   }
 
   hasRequired() {

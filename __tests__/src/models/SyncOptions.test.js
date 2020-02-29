@@ -131,13 +131,18 @@ describe('Sync Options Model tests', () => {
     );
   });
 
-  test('Log error when sent config file cannot be read', () => {
+  test('Log error when sent config .json file cannot be read', () => {
     inputFromCLI.config = '__fixtures__/bad.json';
     syncOptions = new SyncOptions(inputFromCLI);
     expect(console.error).toHaveBeenCalled();
     expect(mockLog.getError()).toEqual(
       `${log._LOGSTARTERS.error} Unable to get config file __fixtures__/bad.json`
     );
+  });
+  test('Log error when sent config .js file has nothing to export', () => {
+    inputFromCLI.config = '__fixtures__/bad.js';
+    syncOptions = new SyncOptions(inputFromCLI);
+    expect(console.error).not.toHaveBeenCalled();
   });
   test('Error is given when a non .json or non .js file is given as a config file', () => {
     inputFromCLI.config = '__fixtures__/sample.html';
@@ -147,7 +152,18 @@ describe('Sync Options Model tests', () => {
       `${log._LOGSTARTERS.error} Unable to get config file __fixtures__/sample.html`
     );
   });
-  test('.json based config file is used before .js based file ', () => {});
-  test('Default .json configuration  is config.json', () => {});
-  test('Default .json configuration  is config.json', () => {});
+  test('.json based config file is used before .js based file ', () => {
+    syncOptions = new SyncOptions();
+    syncOptions.defaultJsonConfig = '__fixtures__/config.json';
+    syncOptions.defaultJSConfig = '__fixtures__/config.js';
+
+    const configFileJSON = syncOptions._getConfigFile();
+    expect(configFileJSON.inputFile).toEqual('MyNewInputFile');
+    expect(configFileJSON.inputFile).not.toEqual('MyNewInputFileFromJSConfig');
+  });
+  test('Default .json and .js  configuration', () => {
+    syncOptions = new SyncOptions(inputFromCLI);
+    expect(syncOptions.defaultJsonConfig).toEqual('config.json');
+    expect(syncOptions.defaultJSConfig).toEqual('config.js');
+  });
 });
