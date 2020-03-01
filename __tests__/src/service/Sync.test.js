@@ -95,6 +95,24 @@ describe('Sync tests', () => {
     });
   });
 
+  test('Get labels from config file', done => {
+    const options = new SyncOptions({
+      inputRepo: 'myOwner/myLabelRepo',
+      config: '__fixtures__/configWithLabels.json',
+      github: 'myGitHubRepo',
+      token: 'myGitHubToken',
+      outputRepoFile: '__fixtures__/localRepoList.json'
+    });
+    const sync = new Sync(options);
+    sync._getLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._labelArray).toHaveLength(2);
+      expect(sync._labelArray[0]).toBeInstanceOf(Label);
+      expect(sync._labelArray[0].name).toEqual('my config label');
+      done();
+    });
+  });
+
   test('Get repos from file', done => {
     const options = new SyncOptions({
       inputRepo: 'myOwner/myLabelRepo',

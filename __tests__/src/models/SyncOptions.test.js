@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import fs from 'fs';
+import path from 'path';
 import SyncOptions from '../../../src/models/SyncOptions';
 import log from '../../../src/service/log';
 import mockLog from '../../../src/service/mockLog';
@@ -55,6 +57,18 @@ describe('Sync Options Model tests', () => {
     expect(syncOptions.outputRepoFile).toEqual('myOutPutRepFilePath'); // note this is pulled from inputFromCLI
     expect(syncOptions.sync).toBeTruthy();
     expect(syncOptions.force).toBeTruthy();
+  });
+
+  test('Get labels from Config', () => {
+    inputFromCLI.config = '__fixtures__/configWithLabels.json';
+    syncOptions = new SyncOptions(inputFromCLI);
+    const config = JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, '../../../__fixtures__/configWithLabels.json'),
+        'utf8'
+      )
+    );
+    expect(syncOptions.labels).toEqual(config.labels);
   });
 
   test('Has required - pass', () => {

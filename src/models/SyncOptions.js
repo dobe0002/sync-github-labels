@@ -13,24 +13,6 @@ class SyncOptions {
       _.get(this.userOptions, 'config')
     );
     this.combineWithConfigFile(configFileJSON);
-    /*
-
-    const newOptions = SyncOptions._combineConfigFile(
-      userOptions,
-      configFileJSON
-    );
-
-    this.syncInputFile = newOptions.inputFile || ''; // file that lists the master labels
-    this.syncInputRepo = newOptions.inputRepo || ''; // owner/repo that contains the master labels
-    this.syncGithub = newOptions.github || '';
-    this.syncToken = newOptions.token || '';
-    this.syncOutputRepos = newOptions.outputRepos || []; // array of ['owner/repo', 'owner/repo']
-    this.syncOutputRepoFile = newOptions.outputRepoFile || ''; // file with array of ['owner/repo', 'owner/repo']
-    this.syncSync = newOptions.sync || false;
-    this.syncForce = newOptions.syncForce || false;
-    this.debugMode = newOptions.debug || false;
-    this.onlyActive = newOptions.active || false;
-    */
 
     this.defaultJsonConfig = 'config.json';
     this.defaultJSConfig = 'config.js';
@@ -48,12 +30,13 @@ class SyncOptions {
     this.syncForce = newOptions.syncForce || false;
     this.debugMode = newOptions.debug || false;
     this.onlyActive = newOptions.active || false;
+    this.masterLabels = newOptions.labels || [];
   }
-
+  /*
   static _combineConfigFile(userConfig, configFile) {
     return _.merge(userConfig, configFile);
   }
-
+*/
   /** * getters */
 
   get debug() {
@@ -94,6 +77,10 @@ class SyncOptions {
 
   get force() {
     return this.syncForce;
+  }
+
+  get labels() {
+    return this.masterLabels;
   }
 
   set _jsonConfig(configFile) {

@@ -1,0 +1,16 @@
+{
+  "url":"MyGitHubURL",
+  "token": "MyGitHubToken",
+  "labels": [
+    {
+      "name": "my config label",
+      "color": "123",
+      "description": "This is label"
+    },
+    {
+      "name": "my other config label",
+      "color": "456",
+      "description": "This is the other label"
+    }
+  ]
+}
