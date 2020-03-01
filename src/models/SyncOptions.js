@@ -6,16 +6,15 @@ const _ = require('lodash');
 const log = require('../service/log');
 
 class SyncOptions {
-  constructor(userOptions) {
+  constructor(userOptions, _defaultJsonConfig, _defaultJSConfig) {
     this.userOptions = userOptions; // Configs sent in when object was created
+    this.defaultJsonConfig = _defaultJsonConfig || 'config.json';
+    this.defaultJSConfig = _defaultJSConfig || 'config.js';
 
     const configFileJSON = this._getConfigFile(
       _.get(this.userOptions, 'config')
     );
     this.combineWithConfigFile(configFileJSON);
-
-    this.defaultJsonConfig = 'config.json';
-    this.defaultJSConfig = 'config.js';
   }
 
   combineWithConfigFile(configFileJSON) {
@@ -154,7 +153,11 @@ class SyncOptions {
 
   hasRequired() {
     let hasRequired = true;
-    if (this.inputFile === '' && this.inputRepo === '') {
+    if (
+      this.inputFile === '' &&
+      this.inputRepo === '' &&
+      this.labels.length === 0
+    ) {
       hasRequired = false;
       log.debug(this.debugMode, 'No source for the labels identified');
     }

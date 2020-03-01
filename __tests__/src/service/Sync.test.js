@@ -79,12 +79,16 @@ describe('Sync tests', () => {
     done();
   });
   test('Get Labels from repo', done => {
-    const options = new SyncOptions({
-      inputRepo: 'myOwner/myLabelRepo',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg'
-    });
+    const options = new SyncOptions(
+      {
+        inputRepo: 'myOwner/myLabelRepo',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg'
+      },
+      'noConfig',
+      'noConfig'
+    );
 
     const sync = new Sync(options);
     sync._getLabels(error => {
@@ -114,12 +118,16 @@ describe('Sync tests', () => {
   });
 
   test('Get repos from file', done => {
-    const options = new SyncOptions({
-      inputRepo: 'myOwner/myLabelRepo',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputRepoFile: '__fixtures__/localRepoList.json'
-    });
+    const options = new SyncOptions(
+      {
+        inputRepo: 'myOwner/myLabelRepo',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputRepoFile: '__fixtures__/localRepoList.json'
+      },
+      'noConfig',
+      'noConfig'
+    );
     const expected = [
       new Repo({ owner: { login: 'myOrgFromFile' }, name: 'Repo1' }),
       new Repo({ owner: { login: 'myOrgFromFile' }, name: 'Repo2' }),
@@ -136,12 +144,16 @@ describe('Sync tests', () => {
     });
   });
   test('Get repos from array', done => {
-    const options = new SyncOptions({
-      inputRepo: 'myOwner/myLabelRepo',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputRepos: ['myOrg1/myRepo1', 'myOrg2/myRepo2']
-    });
+    const options = new SyncOptions(
+      {
+        inputRepo: 'myOwner/myLabelRepo',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputRepos: ['myOrg1/myRepo1', 'myOrg2/myRepo2']
+      },
+      'noConfig',
+      'noConfig'
+    );
     const expected = [
       new Repo({ owner: { login: 'myOrg1' }, name: 'myRepo1' }),
       new Repo({ owner: { login: 'myOrg2' }, name: 'myRepo2' })
@@ -176,12 +188,16 @@ describe('Sync tests', () => {
         description: 'this is a very new label'
       })
     ];
-    const options = new SyncOptions({
-      inputRepo: 'myOwner/myLabelRepo',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputRepos: ['myOrg1/myRepo1', 'myOrg2/myRepo2']
-    });
+    const options = new SyncOptions(
+      {
+        inputRepo: 'myOwner/myLabelRepo',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputRepos: ['myOrg1/myRepo1', 'myOrg2/myRepo2']
+      },
+      'noConfig',
+      'noConfig'
+    );
 
     const sync = new Sync(options);
 
@@ -203,12 +219,16 @@ describe('Sync tests', () => {
   });
 
   test('Add labels to repos', done => {
-    const options = new SyncOptions({
-      inputFile: '../../__fixtures__/localLabelFile.json',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg'
-    });
+    const options = new SyncOptions(
+      {
+        inputFile: '../../__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg'
+      },
+      'noConfig',
+      'noConfig'
+    );
     const labelAdded = {
       label: new Label({
         name: 'newLabel',
@@ -230,12 +250,16 @@ describe('Sync tests', () => {
   });
 
   test('Edited labels to repos', done => {
-    const options = new SyncOptions({
-      inputFile: '../../__fixtures__/localLabelFile.json',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg'
-    });
+    const options = new SyncOptions(
+      {
+        inputFile: '../../__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg'
+      },
+      'noConfig',
+      'noConfig'
+    );
     const labelsEdited = [
       {
         label: new Label({
@@ -285,13 +309,17 @@ describe('Sync tests', () => {
   });
 
   test('Labels not in use removed with force setting', done => {
-    const options = new SyncOptions({
-      inputFile: '../../__fixtures__/localLabelFile.json',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg',
-      syncForce: true
-    });
+    const options = new SyncOptions(
+      {
+        inputFile: '../../__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg',
+        syncForce: true
+      },
+      'noConfig',
+      'noConfig'
+    );
 
     const expected = [
       {
@@ -318,13 +346,17 @@ describe('Sync tests', () => {
   });
 
   test('Labels in use removed with force setting', done => {
-    const options = new SyncOptions({
-      inputFile: '../../__fixtures__/localLabelFile.json',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg',
-      syncForce: true
-    });
+    const options = new SyncOptions(
+      {
+        inputFile: '../../__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg',
+        syncForce: true
+      },
+      'noConfig',
+      'noConfig'
+    );
 
     const expected = [
       {
@@ -352,13 +384,17 @@ describe('Sync tests', () => {
   });
 
   test('Labels not in use removed without force setting', done => {
-    const options = new SyncOptions({
-      inputFile: '../../__fixtures__/localLabelFile.json',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg',
-      sync: true
-    });
+    const options = new SyncOptions(
+      {
+        inputFile: '../../__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg',
+        sync: true
+      },
+      'noConfig',
+      'noConfig'
+    );
 
     const expected = [
       {

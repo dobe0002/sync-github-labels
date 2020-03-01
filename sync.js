@@ -120,6 +120,6 @@ if (opts.version) {
 }
 
 /* CALL LABEL SYNC */
-const syncOptions = new SyncOptions(opts, options);
+const syncOptions = new SyncOptions(opts);
 const sync = new Sync(syncOptions);
 sync.run();

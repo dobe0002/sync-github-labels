@@ -24,7 +24,7 @@ describe('Sync Options Model tests', () => {
       github: 'myGitHub',
       outputRepoFile: 'myOutPutRepFilePath'
     };
-    syncOptions = new SyncOptions(inputFromCLI);
+    syncOptions = new SyncOptions(inputFromCLI, 'noconfig', 'noconfig');
   });
   test('Is instance of SyncOptions', () => {
     expect(syncOptions).toBeInstanceOf(SyncOptions);
@@ -84,7 +84,7 @@ describe('Sync Options Model tests', () => {
       token: 'mytoken',
       outputRepos: ['myrepo']
     };
-    syncOptions = new SyncOptions(inputFromCLI);
+    syncOptions = new SyncOptions(inputFromCLI, 'noConfig', 'noConfig');
     expect(syncOptions.inputRepo).toBeFalsy();
     expect(syncOptions.syncInputRepo).toBeFalsy();
     expect(syncOptions.hasRequired()).toBeFalsy();
@@ -95,7 +95,7 @@ describe('Sync Options Model tests', () => {
       github: 'myGithubRepo',
       outputRepos: ['myrepo']
     };
-    syncOptions = new SyncOptions(inputFromCLI);
+    syncOptions = new SyncOptions(inputFromCLI, 'noConfig', 'noConfig');
     expect(syncOptions.token).toBeFalsy();
     expect(syncOptions.hasRequired()).toBeFalsy();
   });
@@ -105,7 +105,7 @@ describe('Sync Options Model tests', () => {
       token: 'myToken',
       outputRepos: ['myrepo']
     };
-    syncOptions = new SyncOptions(inputFromCLI);
+    syncOptions = new SyncOptions(inputFromCLI, 'noConfig', 'noConfig');
     expect(syncOptions.github).toBeFalsy();
     expect(syncOptions.hasRequired()).toBeFalsy();
   });
@@ -115,7 +115,7 @@ describe('Sync Options Model tests', () => {
       github: 'myGitHubUrl',
       token: 'myToken'
     };
-    syncOptions = new SyncOptions(inputFromCLI);
+    syncOptions = new SyncOptions(inputFromCLI, 'noConfig', 'noConfig');
     expect(syncOptions.outputRepos).toHaveLength(0);
     expect(syncOptions.outputFile).toBeFalsy();
     expect(syncOptions.hasRequired()).toBeFalsy();
