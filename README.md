@@ -68,7 +68,7 @@ You will need to know the relative path from the root of the project to your JSO
 
 Output repositories where the master labels will be added (or edited). You can simply list the owner/name of the repositories **OR** list the repositories in a JSON file.
 
-### Output repositories array
+### Output repositories
 
 You will need both the organization and repository name for each repository. For example if the URL for you repository is:
 
@@ -78,14 +78,7 @@ https://github.umn.edu/kkd-test-org/Tester_Repo/
 
 The owner is `kkd-test-org` and the name is `Tester_Repo`.
 
-The array would look like this:
 
-```
-[
-  'kkd-test-org/Tester_Repo',
-  'anotherOrg/Another_Repo
-]
-```
 
 ## Output repository JSON file
 
