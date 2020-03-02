@@ -52,6 +52,7 @@ class Sync {
         _.bind(this._getRepoLabels, this),
         _.bind(this._addLabels, this),
         _.bind(this._editLabels, this),
+        _.bind(this._updateLabels, this),
         _.bind(this._removeLabels, this)
       ],
       error => {
@@ -188,6 +189,30 @@ class Sync {
         self.syncLabels.editLabelsToRepo(repo, (error, labelsEdited) => {
           labelsEdited.forEach(label => {
             self.repos[index].labelEdited(
+              label.label,
+              label.error,
+              label.inuse
+            );
+          });
+          repoCB(null); // purposely not passing error so syncing will continue
+        });
+      },
+      error => {
+        // not this error will always be null (see repoCB call above)
+        return cb(error);
+      }
+    );
+  }
+
+  _updateLabels(cb) {
+    const self = this;
+    return async.eachOfLimit(
+      this.repos,
+      5,
+      (repo, index, repoCB) => {
+        self.syncLabels.updateLabelsToRepo(repo, (error, labelsUpdated) => {
+          labelsUpdated.forEach(label => {
+            self.repos[index].labelUpdated(
               label.label,
               label.error,
               label.inuse

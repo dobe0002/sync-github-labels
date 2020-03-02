@@ -23,6 +23,11 @@ describe('Repo Model Tests', () => {
       name: 'changedDescription',
       color: '999999',
       description: 'this label has a different description'
+    }),
+    new Label({
+      name: 'old name',
+      color: 'abc',
+      description: ''
     })
   ];
 
@@ -46,6 +51,12 @@ describe('Repo Model Tests', () => {
       name: 'changedDescription',
       color: '999999',
       description: 'this label has a different UPDATED description'
+    }),
+    new Label({
+      name: 'old name',
+      new_name: 'new name',
+      color: 'abc',
+      description: ''
     })
   ];
 
@@ -106,6 +117,16 @@ describe('Repo Model Tests', () => {
         name: 'changedDescription',
         color: '999999',
         description: 'this label has a different UPDATED description'
+      })
+    ]);
+  });
+  test('Labels to update', () => {
+    expect(repo.labelsToUpdate).toEqual([
+      new Label({
+        name: 'old name',
+        new_name: 'new name',
+        color: 'abc',
+        description: ''
       })
     ]);
   });

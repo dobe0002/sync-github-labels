@@ -55,7 +55,7 @@ describe('log tests', () => {
     ); // error with removing
 
     const expected =
-      '*******************************************REPO: myOrg/myRepo +++++ Labels Added +++++ +++++ Labels Edited +++++ +++++ Labels Removed +++++Good_LabelInuse_Label ***  Not removed because in use !!!!!  Error syncing: Error_Label  ';
+      '*******************************************REPO: myOrg/myRepo +++++ Labels Added +++++ +++++ Labels Edited +++++ +++++ Labels Removed +++++Good_LabelInuse_Label ***  Not removed because in use !!!!!  Error syncing: Error_Label  +++++ Labels Updated +++++ ';
 
     log.report(repo);
     expect(console.log).toHaveBeenCalled();

@@ -11,6 +11,7 @@ const FixtureRepos = require('../../../__fixtures__/reposForSync');
 describe('Sync tests', () => {
   // See the repoLabels file to determine what is expected
   // Expected labels are actually Label objects
+  // TODO Change these to Label objects!
   const expectedLabels = [
     {
       isUMN: false,
@@ -55,7 +56,7 @@ describe('Sync tests', () => {
   test('Sync labels  with "sync force" flag on', () => { });
 */
   /* **************************************** */
-  /** TEMP TESTS = DELETE AFTER DEVELOPMENT */
+  /** TEMP TESTS = DELETE AFTER DEVELOPMENT  and above tests are implemented */
 
   test('Get Labels from file', done => {
     const options = new SyncOptions({
@@ -262,6 +263,50 @@ describe('Sync tests', () => {
   });
 
   test('Edited labels to repos', done => {
+    const options = new SyncOptions(
+      {
+        inputFile: '../../__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg'
+      },
+      'noConfig',
+      'noConfig'
+    );
+    const labelsEdited = [
+      {
+        label: new Label({
+          name: 'changedColor',
+          color: 'aaaaaa',
+          description: 'this label has a different color'
+        }),
+        error: null,
+        inuse: false
+      },
+      {
+        label: new Label({
+          name: 'changedDescription',
+          color: '999999',
+          description: 'this label has a different description'
+        }),
+        error: null,
+        inuse: false
+      }
+    ];
+
+    const sync = new Sync(options);
+    sync._repoArray = FixtureRepos.repos();
+    sync._editLabels(error => {
+      expect(error).toBeNull();
+      expect(sync._repoArray).toHaveLength(2);
+      expect(sync._repoArray[0].labelsEdited).toHaveLength(2);
+      expect(sync._repoArray[0].labelsEdited).toEqual(labelsEdited);
+      done();
+    });
+  });
+
+  test.only('Updated labels to repos', done => {
+    // aka a label name has changed
     const options = new SyncOptions(
       {
         inputFile: '../../__fixtures__/localLabelFile.json',

@@ -47,6 +47,10 @@ const _formatReport = (repo, type) => {
     remove: {
       text: 'Removed',
       method: 'labelsRemoved'
+    },
+    update: {
+      text: 'Updated',
+      method: 'labelsUpdated'
     }
   };
   console.log(`+++++ Labels ${methods[type].text} +++++`);
@@ -70,6 +74,7 @@ const report = repo => {
   _formatReport(repo, 'add');
   _formatReport(repo, 'edit');
   _formatReport(repo, 'remove');
+  _formatReport(report, 'update');
 };
 
 module.exports = { log, warn, error, debug, report, _LOGSTARTERS };

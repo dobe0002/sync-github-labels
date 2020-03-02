@@ -7,6 +7,10 @@ class Label {
     this.isUMN = obj.umn || false;
   }
 
+  get newName() {
+    return this.labelNewName;
+  }
+
   get name() {
     return this.labelName;
   }

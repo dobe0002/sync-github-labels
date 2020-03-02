@@ -9,6 +9,7 @@ class Repo {
     this.labelsAddedArray = []; // tracks the result of an attempt to add a label
     this.labelsEditedArray = []; // tracks the result of an attempt to edit a label
     this.labelsRemovedArray = []; // tracks the result of an attempt to remove a label
+    this.labelsUpdatedArray = [];
   }
 
   /** Set label status * */
@@ -21,6 +22,10 @@ class Repo {
   labelEdited(label, error = null, inuse = false) {
     // label is a label object
     this.labelsEditedArray.push({ label, error, inuse });
+  }
+
+  labelUpdated(label, error = null, inuse = false) {
+    this.labelsUpdatedArray.push({ label, error, inuse });
   }
 
   labelRemoved(label, error = null, inuse = false, removed = false) {
@@ -40,6 +45,10 @@ class Repo {
 
   get labelsRemoved() {
     return this.labelsRemovedArray;
+  }
+
+  get labelsUpdated() {
+    return this.labelsUpdatedArray;
   }
 
   get owner() {
@@ -111,6 +120,7 @@ class Repo {
 
   get labelsToEdit() {
     // labels in both local and master but have differences
+    // Based on names the same in each repo
     const dupLabels = _.intersectionWith(
       this.mastLabels,
       this.repoLabels,
@@ -122,6 +132,21 @@ class Repo {
       (label1, label2) =>
         label1.color === label2.color &&
         label1.description === label2.description
+    );
+  }
+
+  get labelsToUpdate() {
+    // updates labels where the name has changed
+    // go through master labels and then pull out ones where new_name  is not equal to name
+    return _.reduce(
+      this.mastLabels,
+      (updateLables, label) => {
+        if (label.newName !== '' && label.newName !== label.name) {
+          updateLables.push(label);
+        }
+        return updateLables;
+      },
+      []
     );
   }
 }
