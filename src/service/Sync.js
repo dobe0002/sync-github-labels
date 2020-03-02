@@ -23,7 +23,7 @@ class Sync {
       this.syncOptions.force
     );
 
-    this.labels = []; // Master array of Label objects
+    this.labels = this.syncOptions.labels || []; // Master array of Label objects
     this.repos = []; // Array of Repo objects
   }
 
@@ -77,7 +77,10 @@ class Sync {
   }
 
   _getLabels(cb) {
-    if (this.syncOptions.inputFile !== '') {
+    if (_.isArray(this.labels) && this.labels.length > 0) {
+      this.labels = GetLabels.toLabel(this.labels);
+      cb(null);
+    } else if (this.syncOptions.inputFile !== '') {
       this._labelsFromFile(error => cb(error));
     } else if (this.syncOptions.inputRepo !== '') {
       this._labelsFromRepo(error => cb(error));
@@ -125,7 +128,7 @@ class Sync {
     if (repos.length === 0) {
       error = `No output repos identified`;
     }
-    // TODO change this to lodash map to prevent thrown exception when repo is undefined
+
     this.repos = repos.map(repo => {
       const repoObj = new Repo();
       repoObj.fullName = repo;

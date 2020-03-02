@@ -8,6 +8,7 @@ class SyncLabels extends Labels {
     gitToken = '',
     gitUrl = '',
     syncForceSetting = false,
+    onlyActive = false,
     debug = false
   ) {
     super(); // notes this.git is inherited
@@ -15,6 +16,7 @@ class SyncLabels extends Labels {
     this.gitUrl = gitUrl;
     this.syncForceSetting = syncForceSetting;
     this.debug = debug;
+    this.onlyActive = onlyActive;
     this._setGit();
   }
 
@@ -96,7 +98,12 @@ class SyncLabels extends Labels {
     let error = null;
     let response = '';
     try {
-      response = await this.git.isLabelInUse(owner, repoName, label);
+      response = await this.git.isLabelInUse(
+        owner,
+        repoName,
+        label,
+        this.onlyActive
+      );
     } catch (err) {
       error = `Failed to determine if label ${label.name} is in use in repo ${repoName}`;
       log.debug(this.debug, error, err);

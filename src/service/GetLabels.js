@@ -21,14 +21,21 @@ class GetLabels extends Labels {
       try {
         labelJson = JSON.parse(
           fs.readFileSync(path.join(__dirname, `../../${filePath}`), 'utf8')
-        );
+        ).labels;
       } catch (error) {
         log.debug(this.debug, `File ${filePath} not found.`);
         return new Error(`File ${filePath} not found.`);
       }
     }
 
-    return _.map(labelJson.labels, label => new Label(label));
+    return GetLabels.toLabel(labelJson);
+  }
+
+  static toLabel(labelJson) {
+    const newLabels = _.map(labelJson, label => {
+      return label instanceof Label ? label : new Label(label);
+    });
+    return newLabels;
   }
 
   async fromRepo(owner, repo, cb) {

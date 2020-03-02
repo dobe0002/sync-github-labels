@@ -34,7 +34,7 @@ const options = [
     names: ['config', 'c'],
     type: 'string',
     help: 'Path to configuration file.',
-    default: 'config.json'
+    default: '' // NOTE: in src/models/SyncOption the code will look for config.json and then config.js be default
   },
   {
     names: ['outputRepos', 'o'],
@@ -77,6 +77,18 @@ const options = [
     names: ['version', 'v'],
     type: 'bool',
     help: 'Print the version of the application and exit.'
+  },
+  {
+    names: ['active', 'a'],
+    type: 'bool',
+    help:
+      'Prevent delete labels that are used in active/open issues.  Note when this is true, labels will be removed only if they are used on closed issues.'
+  },
+  {
+    names: ['debug', 'b'],
+    type: 'bool',
+    help:
+      'If addeded or set to true, the application will add debug statements to the console.'
   }
 ];
 
@@ -108,6 +120,6 @@ if (opts.version) {
 }
 
 /* CALL LABEL SYNC */
-const syncOptions = new SyncOptions(opts, options);
+const syncOptions = new SyncOptions(opts);
 const sync = new Sync(syncOptions);
 sync.run();

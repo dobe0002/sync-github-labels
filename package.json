@@ -1,6 +1,6 @@
 {
   "name": "sync-github-labels",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "repository": "https://github.com/dobe0002/sync-github-labels",
   "license": "MIT",
@@ -108,12 +108,13 @@
     "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.{js,jsx}",
-      "!**/node_modules/**",
-      "!**/coverage/**",
-      "!**/jest.config.js",
-      "!**/lint-staged.config.js",
-      "!**/__fixtures__/** ",
-      "!**/utils/** "
+      "!**/lint-staged.config.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/coverage/",
+      "/utils/",
+      "/__fixtures__"
     ],
     "coverageReporters": [
       "html",
