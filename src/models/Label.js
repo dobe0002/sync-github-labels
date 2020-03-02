@@ -1,8 +1,10 @@
 class Label {
   constructor(obj = {}) {
     this.labelName = obj.name || '';
+    this.labelNewName = obj.new_name || '';
     this.labelColor = obj.color || '';
     this.labelDescription = obj.description || '';
+    this.isUMN = obj.umn || false;
   }
 
   get name() {
@@ -33,11 +35,22 @@ class Label {
   }
 
   get toObject() {
-    return {
+    // TODO when UMN is updated to 2.19, the first if/else will need to be removed
+    const obj = {
       color: this.color,
-      name: this.name,
       description: this.description
     };
+
+    if (this.isUMN === true && this.labelNewName !== '') {
+      obj.name = this.labelNewName;
+    } else {
+      if (this.labelNewName !== '') {
+        obj.new_name = this.labelNewName;
+      }
+      obj.name = this.labelName;
+    }
+
+    return obj;
   }
 }
 

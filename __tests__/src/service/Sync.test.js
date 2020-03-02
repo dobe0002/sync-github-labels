@@ -13,24 +13,32 @@ describe('Sync tests', () => {
   // Expected labels are actually Label objects
   const expectedLabels = [
     {
+      isUMN: false,
       labelColor: 'aabbcc',
       labelDescription: 'My newly created label.',
-      labelName: 'My New label'
+      labelName: 'My New label',
+      labelNewName: ''
     },
     {
+      isUMN: false,
       labelColor: '778899',
       labelDescription: 'Really troublesome insect.',
-      labelName: 'Bug :bug:'
+      labelName: 'Bug :bug:',
+      labelNewName: ''
     },
     {
+      isUMN: false,
       labelColor: 'ddeeff',
       labelDescription: 'This label only lives in the repos.',
-      labelName: 'repo label'
+      labelName: 'repo label',
+      labelNewName: ''
     },
     {
+      isUMN: false,
       labelColor: 'ffeedd',
       labelDescription: 'This other label only lives in the repos.',
-      labelName: 'other repo label'
+      labelName: 'other repo label',
+      labelNewName: ''
     }
   ];
   beforeEach(() => {
@@ -58,14 +66,18 @@ describe('Sync tests', () => {
     });
     const expected = [
       {
+        isUMN: false,
         labelName: 'my label',
         labelColor: 'f00',
-        labelDescription: 'This is label'
+        labelDescription: 'This is label',
+        labelNewName: ''
       },
       {
+        isUMN: false,
         labelName: 'my other label',
         labelColor: '0f0',
-        labelDescription: 'This is the other label'
+        labelDescription: 'This is the other label',
+        labelNewName: ''
       }
     ];
     const sync = new Sync(options);
