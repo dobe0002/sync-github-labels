@@ -9,9 +9,9 @@ This command line application will sync labels between GitHub repositories. This
 1. Download/clone this repository from GitHub
 1. In a terminal, navigate to the root of the project
 1. Run `npm install --production`
-1. Copy `config.example.json` to `config.json` at the root of the project
-1. Inside of `config.json` enter the correct GitHub api URL and your [GitHub personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
-
+1. Copy `config.example.json` to `config.json`  **OR** copy `config.example.js` to `config.js` at the root of the project
+1. Inside of `config.json` **OR** `config.js` enter the correct GitHub api URL and your [GitHub personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+ 
 
 ## Quick start
 After completing the set-up steps above, in a terminal, at the root of the project, type in the following:
