@@ -79,7 +79,10 @@ class Sync {
 
   _getLabels(cb) {
     if (_.isArray(this.labels) && this.labels.length > 0) {
-      this.labels = GetLabels.toLabel(this.labels);
+      this.labels = GetLabels.toLabel(
+        this.labels,
+        GetLabels.isUmn(this.syncOptions.github)
+      );
       cb(null);
     } else if (this.syncOptions.inputFile !== '') {
       this._labelsFromFile(error => cb(error));
@@ -91,7 +94,7 @@ class Sync {
   }
 
   _labelsFromFile(cb) {
-    const labels = GetLabels.fromFile(this.syncOptions.inputFile);
+    const labels = this.getLabels.fromFile(this.syncOptions.inputFile);
     let error = null;
     if (_.isError(labels)) {
       error = labels.message;
@@ -218,6 +221,7 @@ class Sync {
               label.inuse
             );
           });
+
           repoCB(null); // purposely not passing error so syncing will continue
         });
       },

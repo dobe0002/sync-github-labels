@@ -14,28 +14,28 @@ describe('Sync tests', () => {
   // TODO Change these to Label objects!
   const expectedLabels = [
     {
-      isUMN: false,
+      umn: false,
       labelColor: 'aabbcc',
       labelDescription: 'My newly created label.',
       labelName: 'My New label',
       labelNewName: ''
     },
     {
-      isUMN: false,
+      umn: false,
       labelColor: '778899',
       labelDescription: 'Really troublesome insect.',
       labelName: 'Bug :bug:',
       labelNewName: ''
     },
     {
-      isUMN: false,
+      umn: false,
       labelColor: 'ddeeff',
       labelDescription: 'This label only lives in the repos.',
       labelName: 'repo label',
       labelNewName: ''
     },
     {
-      isUMN: false,
+      umn: false,
       labelColor: 'ffeedd',
       labelDescription: 'This other label only lives in the repos.',
       labelName: 'other repo label',
@@ -59,22 +59,26 @@ describe('Sync tests', () => {
   /** TEMP TESTS = DELETE AFTER DEVELOPMENT  and above tests are implemented */
 
   test('Get Labels from file', done => {
-    const options = new SyncOptions({
-      inputFile: '__fixtures__/localLabelFile.json',
-      github: 'myGitHubRepo',
-      token: 'myGitHubToken',
-      outputOrg: 'myLabelOrg'
-    });
+    const options = new SyncOptions(
+      {
+        inputFile: '__fixtures__/localLabelFile.json',
+        github: 'myGitHubRepo',
+        token: 'myGitHubToken',
+        outputOrg: 'myLabelOrg'
+      },
+      'no_config',
+      'no_config'
+    );
     const expected = [
       {
-        isUMN: false,
+        umn: false,
         labelName: 'my label',
         labelColor: 'f00',
         labelDescription: 'This is label',
         labelNewName: ''
       },
       {
-        isUMN: false,
+        umn: false,
         labelName: 'my other label',
         labelColor: '0f0',
         labelDescription: 'This is the other label',
@@ -305,7 +309,7 @@ describe('Sync tests', () => {
     });
   });
 
-  test('Updated labels to repos', done => {
+  test.only('Updated labels to repos', done => {
     // aka a label name has changed
     const options = new SyncOptions(
       {

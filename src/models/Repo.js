@@ -124,7 +124,13 @@ class Repo {
     const dupLabels = _.intersectionWith(
       this.mastLabels,
       this.repoLabels,
-      (label1, label2) => label1.name === label2.name
+      (label1, label2) => {
+        return (
+          label1.name === label2.name &&
+          label1.newName === '' &&
+          label2.newName === ''
+        );
+      }
     );
     return _.differenceWith(
       dupLabels,
@@ -140,11 +146,18 @@ class Repo {
     // go through master labels and then pull out ones where new_name  is not equal to name
     return _.reduce(
       this.mastLabels,
-      (updateLables, label) => {
-        if (label.newName !== '' && label.newName !== label.name) {
-          updateLables.push(label);
+      (updateLabels, label) => {
+        const find = _.findIndex(this.masterLabels, masterLabel => {
+          return masterLabel.name === label.name;
+        });
+        if (
+          label.newName !== '' &&
+          label.newName !== label.name &&
+          find === undefined
+        ) {
+          updateLabels.push(label);
         }
-        return updateLables;
+        return updateLabels;
       },
       []
     );

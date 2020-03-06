@@ -13,9 +13,14 @@ class GetLabels extends Labels {
     this.gitUrl = gitUrl;
     this.debug = debugMode;
     this._setGit();
+    this.umn = GetLabels.isUmn(this.gitUrl);
   }
 
-  static fromFile(filePath) {
+  static isUmn(gitUrl) {
+    return gitUrl.includes('umn.edu');
+  }
+
+  fromFile(filePath) {
     let labelJson = [];
     if (filePath !== undefined && filePath !== '') {
       try {
@@ -28,22 +33,30 @@ class GetLabels extends Labels {
       }
     }
 
-    return GetLabels.toLabel(labelJson);
+    return GetLabels.toLabel(labelJson, this.umn);
   }
 
-  static toLabel(labelJson) {
+  static toLabel(labelJson, isUmn = false) {
     const newLabels = _.map(labelJson, label => {
       return label instanceof Label ? label : new Label(label);
     });
-    return newLabels;
+    return _.each(newLabels, label => {
+      const labelObj = label;
+      labelObj.isUmn = isUmn;
+      return labelObj;
+    });
   }
 
   async fromRepo(owner, repo, cb) {
+    // note repo is the repo name and not a repo object
     let labels = [];
     let error = null;
     try {
       const labelJson = await this.git.getLabels(owner, repo);
-      labels = _.map(labelJson.data, label => {
+      labels = _.map(labelJson.data, gitHubLabel => {
+        // this.isUMN = obj.umn || false;
+        const label = gitHubLabel;
+        label.isUmn = this.umn;
         return new Label(label);
       });
     } catch (err) {

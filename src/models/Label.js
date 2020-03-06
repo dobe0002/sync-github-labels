@@ -4,7 +4,11 @@ class Label {
     this.labelNewName = obj.new_name || '';
     this.labelColor = obj.color || '';
     this.labelDescription = obj.description || '';
-    this.isUMN = obj.umn || false;
+    this.umn = obj.umn || false;
+  }
+
+  set isUmn(bool) {
+    this.umn = bool;
   }
 
   get newName() {
@@ -45,7 +49,7 @@ class Label {
       description: this.description
     };
 
-    if (this.isUMN === true && this.labelNewName !== '') {
+    if (this.umn === true && this.labelNewName !== '') {
       obj.name = this.labelNewName;
     } else {
       if (this.labelNewName !== '') {
