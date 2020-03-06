@@ -53,6 +53,7 @@ const _formatReport = (repo, type) => {
       method: 'labelsUpdated'
     }
   };
+
   console.log(`+++++ Labels ${methods[type].text} +++++`);
   _.each(repo[methods[type].method], label => {
     const errorText =
@@ -74,7 +75,7 @@ const report = repo => {
   _formatReport(repo, 'add');
   _formatReport(repo, 'edit');
   _formatReport(repo, 'remove');
-  _formatReport(report, 'update');
+  _formatReport(repo, 'update');
 };
 
 module.exports = { log, warn, error, debug, report, _LOGSTARTERS };
