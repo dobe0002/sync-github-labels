@@ -309,7 +309,7 @@ describe('Sync tests', () => {
     });
   });
 
-  test.only('Updated labels to repos', done => {
+  test('Updated labels to repos', done => {
     // aka a label name has changed
     const options = new SyncOptions(
       {

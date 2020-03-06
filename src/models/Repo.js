@@ -105,7 +105,10 @@ class Repo {
     return _.differenceWith(
       this.mastLabels,
       this.repoLabels,
-      (label1, label2) => label1.name === label2.name
+      (label1, label2) =>
+        label1.name === label2.name ||
+        label1.newName === label2.name ||
+        label1.name === label2.newName
     );
   }
 
@@ -144,18 +147,19 @@ class Repo {
   get labelsToUpdate() {
     // updates labels where the name has changed
     // go through master labels and then pull out ones where new_name  is not equal to name
+
     return _.reduce(
       this.mastLabels,
-      (updateLabels, label) => {
-        const find = _.findIndex(this.masterLabels, masterLabel => {
-          return masterLabel.name === label.name;
+      (updateLabels, masterLabel) => {
+        const find = _.findIndex(this.repoLabels, repoLabel => {
+          return masterLabel.name === repoLabel.name;
         });
         if (
-          label.newName !== '' &&
-          label.newName !== label.name &&
-          find === undefined
+          masterLabel.newName !== '' &&
+          masterLabel.newName !== masterLabel.name &&
+          find !== -1
         ) {
-          updateLabels.push(label);
+          updateLabels.push(masterLabel);
         }
         return updateLabels;
       },
