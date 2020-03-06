@@ -2,8 +2,8 @@ class Label {
   constructor(obj = {}) {
     this.labelName = obj.name || '';
     this.labelNewName = obj.new_name || '';
-    this.labelColor = obj.color || '';
-    this.labelDescription = obj.description || '';
+    this.labelColor = obj.color || null;
+    this.labelDescription = obj.description || null;
     this.umn = obj.umn || false;
   }
 
@@ -44,10 +44,14 @@ class Label {
 
   get toObject() {
     // TODO when UMN is updated to 2.19, the first if/else will need to be removed
-    const obj = {
-      color: this.color,
-      description: this.description
-    };
+    const obj = {};
+
+    if (this.color !== null) {
+      obj.color = this.color;
+    }
+    if (this.description !== null) {
+      obj.description = this.description;
+    }
 
     if (this.umn === true && this.labelNewName !== '') {
       obj.name = this.labelNewName;
@@ -58,6 +62,14 @@ class Label {
       obj.name = this.labelName;
     }
 
+    return obj;
+  }
+
+  get toObjectForAdd() {
+    const obj = this.toObject;
+    if (!obj.color) {
+      obj.color = 'ffffff';
+    }
     return obj;
   }
 }
