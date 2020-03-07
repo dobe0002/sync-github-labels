@@ -52,6 +52,7 @@ class Sync {
         _.bind(this._getRepoLabels, this),
         _.bind(this._addLabels, this),
         _.bind(this._editLabels, this),
+        _.bind(this._updateLabels, this),
         _.bind(this._removeLabels, this)
       ],
       error => {
@@ -78,7 +79,10 @@ class Sync {
 
   _getLabels(cb) {
     if (_.isArray(this.labels) && this.labels.length > 0) {
-      this.labels = GetLabels.toLabel(this.labels);
+      this.labels = GetLabels.toLabel(
+        this.labels,
+        GetLabels.isUmn(this.syncOptions.github)
+      );
       cb(null);
     } else if (this.syncOptions.inputFile !== '') {
       this._labelsFromFile(error => cb(error));
@@ -90,7 +94,7 @@ class Sync {
   }
 
   _labelsFromFile(cb) {
-    const labels = GetLabels.fromFile(this.syncOptions.inputFile);
+    const labels = this.getLabels.fromFile(this.syncOptions.inputFile);
     let error = null;
     if (_.isError(labels)) {
       error = labels.message;
@@ -193,6 +197,31 @@ class Sync {
               label.inuse
             );
           });
+          repoCB(null); // purposely not passing error so syncing will continue
+        });
+      },
+      error => {
+        // not this error will always be null (see repoCB call above)
+        return cb(error);
+      }
+    );
+  }
+
+  _updateLabels(cb) {
+    const self = this;
+    return async.eachOfLimit(
+      this.repos,
+      5,
+      (repo, index, repoCB) => {
+        self.syncLabels.updateLabelsToRepo(repo, (error, labelsUpdated) => {
+          labelsUpdated.forEach(label => {
+            self.repos[index].labelUpdated(
+              label.label,
+              label.error,
+              label.inuse
+            );
+          });
+
           repoCB(null); // purposely not passing error so syncing will continue
         });
       },

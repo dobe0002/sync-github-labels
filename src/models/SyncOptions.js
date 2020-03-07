@@ -31,11 +31,7 @@ class SyncOptions {
     this.onlyActive = newOptions.active || false;
     this.masterLabels = newOptions.labels || [];
   }
-  /*
-  static _combineConfigFile(userConfig, configFile) {
-    return _.merge(userConfig, configFile);
-  }
-*/
+
   /** * getters */
 
   get debug() {

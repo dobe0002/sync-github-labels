@@ -24,6 +24,11 @@ Replace **input_owner/input_repo** with the owner/repo of the repository that co
 Replace **output_owner/output_repo** with the owner/repo of the repository that contains the labels you want to copy.  For example `kkd-test-org/Another_Repo`
 
 ---
+## Version update
+
+There needs to be a code change when `github.umn.edu` enterprise version changes or migrated to github.com.  See [issue #16](https://github.com/dobe0002/sync-github-labels/issues/16) for more details.
+
+---
 
 ## Master labels
 
@@ -53,12 +58,15 @@ The JSON file will need to be formatted this way:
     },
     {
       "name":"label name",
+      "new_name":"my label's new name",
       "description":"Longer description of the label",
       "color":"004400"
     }
   ]
 }
 ```
+
+**Note:** The following keys are optional: `new_name`, `description`, `color`
 
 You will need to know the relative path from the root of the project to your JSON file.
 

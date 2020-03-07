@@ -12,19 +12,19 @@ describe('GetLabels tests', () => {
 
   test('Returns array of labels from local file', () => {
     const path = '__fixtures__/localLabelFile.json';
-    const labels = GetLabels.fromFile(path);
+    const labels = getLabels.fromFile(path);
     expect(labels).toHaveLength(2);
     expect(labels[0]).toBeInstanceOf(Label);
     expect(labels[0].name).toEqual('my label');
   });
   test('Fail get from file, missing file path', () => {
     const path = '';
-    const labels = GetLabels.fromFile(path);
+    const labels = getLabels.fromFile(path);
     expect(labels).toHaveLength(0);
   });
   test('Fail get from file, cannot file path', () => {
     const path = 'cannotFindMe.json';
-    const labels = GetLabels.fromFile(path);
+    const labels = getLabels.fromFile(path);
     expect(_.isError(labels)).toBeTruthy();
   });
   test('Gets labels from a repo', done => {

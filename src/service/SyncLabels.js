@@ -94,6 +94,30 @@ class SyncLabels extends Labels {
     );
   }
 
+  updateLabelsToRepo(repo, cb) {
+    const self = this;
+    const labelsUpdated = [];
+
+    async.eachOfLimit(
+      repo.labelsToUpdate,
+      5,
+      (label, index, labelCB) => {
+        self._editLabel(repo.owner, repo.name, label, error => {
+          // note (error, response) is set back => removed due to linting
+          labelsUpdated.push({
+            label,
+            error,
+            inuse: false
+          });
+          labelCB(null); // Purposely sending null instead of error so syncing will continue
+        });
+      },
+      error => {
+        return cb(error, labelsUpdated);
+      }
+    );
+  }
+
   async _isLabelInUse(owner, repoName, label, cb) {
     let error = null;
     let response = '';

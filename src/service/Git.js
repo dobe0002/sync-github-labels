@@ -46,7 +46,7 @@ class Git {
 
     const endpoint = `${this.gitUrl}/repos/${owner}/${repoName}/labels`;
     // expect a response of 201
-    return axios.post(endpoint, label.toObject, {
+    return axios.post(endpoint, label.toObjectForAdd, {
       headers: {
         Authorization: `Bearer ${this.gitToken}`,
         Accept: 'application/vnd.github.symmetra-preview+json'

@@ -47,18 +47,27 @@ const _formatReport = (repo, type) => {
     remove: {
       text: 'Removed',
       method: 'labelsRemoved'
+    },
+    update: {
+      text: 'Updated',
+      method: 'labelsUpdated'
     }
   };
+
   console.log(`+++++ Labels ${methods[type].text} +++++`);
-  _.each(repo[methods[type].method], label => {
+  _.each(repo[methods[type].method], labelObj => {
     const errorText =
-      label.error !== null ? `${_LOGSTARTERS.error} Error syncing: ` : '';
+      labelObj.error !== null ? `${_LOGSTARTERS.error} Error syncing: ` : '';
 
     const inuseText =
-      type === 'remove' && label.inuse === true && label.removed === false
+      type === 'remove' && labelObj.inuse === true && labelObj.removed === false
         ? ` ${_LOGSTARTERS.warn} Not removed because in use `
         : '';
-    console.log(`${errorText}${label.label.name}${inuseText}`);
+    let labelName = labelObj.label.name;
+    if (labelObj.label.newName !== '') {
+      labelName = `${labelObj.label.newName} (${labelObj.label.name})`;
+    }
+    console.log(`${errorText}${labelName}${inuseText}`);
   });
   console.log(' ');
 };
@@ -70,6 +79,7 @@ const report = repo => {
   _formatReport(repo, 'add');
   _formatReport(repo, 'edit');
   _formatReport(repo, 'remove');
+  _formatReport(repo, 'update');
 };
 
 module.exports = { log, warn, error, debug, report, _LOGSTARTERS };

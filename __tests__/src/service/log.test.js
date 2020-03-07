@@ -52,10 +52,11 @@ describe('log tests', () => {
       'Error text that should not show',
       false,
       false
-    ); // error with removing
+    );
+    repo.labelUpdated(new Label({ name: 'old name', new_name: 'new name' }));
 
     const expected =
-      '*******************************************REPO: myOrg/myRepo +++++ Labels Added +++++ +++++ Labels Edited +++++ +++++ Labels Removed +++++Good_LabelInuse_Label ***  Not removed because in use !!!!!  Error syncing: Error_Label  ';
+      '*******************************************REPO: myOrg/myRepo +++++ Labels Added +++++ +++++ Labels Edited +++++ +++++ Labels Removed +++++Good_LabelInuse_Label ***  Not removed because in use !!!!!  Error syncing: Error_Label  +++++ Labels Updated +++++new name (old name) ';
 
     log.report(repo);
     expect(console.log).toHaveBeenCalled();
