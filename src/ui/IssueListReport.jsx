@@ -20,7 +20,7 @@ const IssueListReport = props => {
   /* *********************************************** */
   const issueInfo = issue => {
     return (
-      <li>
+      <li key={issue.url}>
         <a href={issue.url}>{issue.name}</a> (#
         {issue.number}) {issue.open !== true && 'CLOSED'}
       </li>
@@ -29,8 +29,9 @@ const IssueListReport = props => {
 
   /* *********************************************** */
   const repoInfo = repo => {
+    const key = `${repo.org}${repo.name}`;
     return (
-      <div>
+      <div key={key}>
         <h3>
           {repo.org}/{repo.name}
         </h3>
