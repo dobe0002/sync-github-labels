@@ -30,9 +30,14 @@ class SyncOptions {
     this.debugMode = newOptions.debug || false;
     this.onlyActive = newOptions.active || false;
     this.masterLabels = newOptions.labels || [];
+    this.reportLabel = newOptions.findLabel || '';
   }
 
   /** * getters */
+
+  get findLabelName() {
+    return this.reportLabel;
+  }
 
   get debug() {
     return this.debugMode;
@@ -150,9 +155,10 @@ class SyncOptions {
   hasRequired() {
     let hasRequired = true;
     if (
-      this.inputFile === '' &&
-      this.inputRepo === '' &&
-      this.labels.length === 0
+      (this.inputFile === '' &&
+        this.inputRepo === '' &&
+        this.labels.length === 0) ||
+      this.findLabel === ''
     ) {
       hasRequired = false;
       log.debug(this.debugMode, 'No source for the labels identified');

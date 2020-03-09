@@ -2,10 +2,9 @@
 
 const async = require('async');
 const _ = require('lodash');
-const fs = require('fs');
-const path = require('path');
 const log = require('./log');
 const GetLabels = require('./GetLabels');
+const GetRepos = require('./GetRepos');
 const Repo = require('../models/Repo');
 const SyncLabels = require('./SyncLabels');
 
@@ -113,32 +112,11 @@ class Sync {
   }
 
   _getRepos(cb) {
-    let repos = [];
-    let error = null;
-    if (this.syncOptions.outputRepos.length > 0) {
-      repos = this.syncOptions.outputRepos;
-    } else if (this.syncOptions.outputRepoFile !== '') {
-      try {
-        repos = JSON.parse(
-          fs.readFileSync(
-            path.join(__dirname, `../../${this.syncOptions.outputRepoFile}`),
-            'utf8'
-          )
-        ).outputRepos;
-      } catch (err) {
-        error = `Unable to read file with output directories`;
-      }
-    }
-    if (repos.length === 0) {
-      error = `No output repos identified`;
-    }
-
-    this.repos = repos.map(repo => {
-      const repoObj = new Repo();
-      repoObj.fullName = repo;
-      return repoObj;
+    const getRepos = new GetRepos(this.syncOptions);
+    getRepos.get((error, repos) => {
+      this.repos = repos;
+      cb(error);
     });
-    cb(error);
   }
 
   _getRepoLabels(cb) {

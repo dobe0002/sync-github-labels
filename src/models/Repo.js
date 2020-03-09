@@ -10,9 +10,18 @@ class Repo {
     this.labelsEditedArray = []; // tracks the result of an attempt to edit a label
     this.labelsRemovedArray = []; // tracks the result of an attempt to remove a label
     this.labelsUpdatedArray = [];
+    this.issueArray = [];
   }
 
   /** Set label status * */
+
+  set addIssues(issueArray) {
+    this.issueArray = issueArray;
+  }
+
+  get issues() {
+    return this.issueArray;
+  }
 
   labelAdded(label, error = null, inuse = false) {
     // label is a label object

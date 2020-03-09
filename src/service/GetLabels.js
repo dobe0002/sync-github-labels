@@ -20,6 +20,10 @@ class GetLabels extends Labels {
     return gitUrl.includes('umn.edu');
   }
 
+  static toObject(label) {
+    return new Label(label);
+  }
+
   fromFile(filePath) {
     let labelJson = [];
     if (filePath !== undefined && filePath !== '') {

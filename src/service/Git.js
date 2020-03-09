@@ -87,6 +87,16 @@ class Git {
     if (!this._isReady()) {
       return Promise.resolve(new Error('No Github token or url set'));
     }
+    const response = await this.getIssues(owner, repoName, label, onlyActive);
+    const isUse = !!(response.total_count && response.total_count > 0);
+    return Promise.resolve(isUse);
+  }
+
+  async getIssues(owner, repoName, label, onlyActive = false, cb = () => {}) {
+    if (!this._isReady()) {
+      cb(new Error('No Github token or url set'));
+      return Promise.resolve(new Error('No Github token or url set'));
+    }
 
     let endpoint = `${this.gitUrl}/search/issues?q=repo:${owner}/${repoName}+label:${label.name}`;
     if (onlyActive) {
@@ -98,7 +108,8 @@ class Git {
         Accept: 'application/vnd.github.symmetra-preview+json'
       }
     });
-    return !!(response.data.total_count && response.data.total_count > 0);
+    cb(response);
+    return Promise.resolve(response.data);
   }
 }
 
