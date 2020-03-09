@@ -29,7 +29,6 @@ class SaveHTML {
     } finally {
       fs.writeFileSync(
         path.join(__dirname, `../../reports/issueList-${Date.now()}.html`),
-        // path.join(__dirname, `../../reports/issueList.html`),
         html
       );
     }
